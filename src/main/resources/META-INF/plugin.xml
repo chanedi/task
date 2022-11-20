@@ -1,0 +1,42 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.lufax.task</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Task Management Enhance</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor>Lufax</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description>Enhance task and context management.....</description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.tasks</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Task" anchor="bottom" icon="TaskEnhanceIcons.ToolWindowTasks"
+                    factoryClass="com.lufax.task.toolwindow.TaskToolWindowFactory"/>
+        <projectService serviceImplementation="com.lufax.task.config.TaskUpdateConfigsState"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij.tasks">
+        <repositoryType implementation="com.lufax.task.SuperGenericRepositoryType" />
+    </extensions>
+
+    <actions>
+        <group id="task.toolWindow.toolbar">
+            <action id="task.local" class="com.lufax.task.toolwindow.actions.GotoLocalTaskAction" text="Open Task" icon="AllIcons.Actions.Selectall"/>
+            <action id="task.detail" class="com.lufax.task.toolwindow.actions.TaskDetailAction" text="Task Detail" icon="AllIcons.General.ShowInfos"/>
+            <action id="task.complete" class="com.lufax.task.toolwindow.actions.TaskCompleteAction" text="Complete Task" icon="AllIcons.RunConfigurations.ShowPassed"/>
+            <action id="task.cancel" class="com.lufax.task.toolwindow.actions.TaskCancelAction" text="Cancel Task" icon="AllIcons.Actions.Cancel" />
+        </group>
+    </actions>
+</idea-plugin>
