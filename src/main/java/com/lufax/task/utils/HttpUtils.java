@@ -3,10 +3,7 @@ package com.lufax.task.utils;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskRepository;
-import com.intellij.tasks.config.TaskSettings;
-import com.intellij.tasks.generic.GenericRepository;
 import com.intellij.tasks.generic.GenericRepositoryUtil;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.tasks.impl.BaseRepository;
@@ -14,17 +11,16 @@ import com.intellij.tasks.impl.BaseRepositoryImpl;
 import com.intellij.tasks.impl.httpclient.NewBaseRepositoryImpl;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.net.HTTPMethod;
-import com.intellij.util.net.IdeHttpClientHelpers;
-import com.intellij.util.net.ssl.CertificateManager;
-import com.lufax.task.SuperGenericRepository;
+import com.lufax.task.repository.SuperGenericRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.jetbrains.annotations.NotNull;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -41,53 +37,18 @@ public class HttpUtils {
 
     private static final Logger LOG = Logger.getInstance(SuperGenericRepository.class);
 
-    public static String executeMethod(TaskRepository taskRepository, HTTPMethod requestType, String requestUrl) throws Exception {
-        return executeMethod(taskRepository, requestType, requestUrl, null);
-
-    }
     public static String executeMethod(TaskRepository taskRepository, HTTPMethod requestType, String requestUrl, List<TemplateVariable> requestTemplateVariables) throws Exception {
         if (CollectionUtils.isNotEmpty(requestTemplateVariables)) {
             requestUrl = GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables);
         }
 
         if (taskRepository instanceof BaseRepositoryImpl) {
-            return b_executeMethod(taskRepository, getHttpMethod((BaseRepositoryImpl) taskRepository, requestUrl, requestType, requestTemplateVariables));
+            return b_executeMethod(taskRepository, requestUrl, requestType, requestTemplateVariables);
         } else if (taskRepository instanceof NewBaseRepositoryImpl) {
-            throw new RuntimeException("Unsupported Repository Type:" + taskRepository.getClass());
+            return nb_executeMethod(taskRepository, requestUrl, requestType, requestTemplateVariables);
         } else {
             throw new RuntimeException("Unsupported Repository Type:" + taskRepository.getClass());
         }
-    }
-
-    public static HttpMethod getHttpMethod(BaseRepositoryImpl taskRepository, String requestUrl, HTTPMethod type, List<TemplateVariable> requestTemplateVariables) {
-        HttpMethod method;
-        try {
-            if (type == HTTPMethod.GET) {
-                method = new GetMethod(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables));
-            } else {
-                int n = requestUrl.indexOf('?');
-                String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
-                method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
-                String[] queryParams = requestUrl.substring(n + 1).split("&");
-                ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
-                    String[] nv = s.split("=");
-                    try {
-                        if (nv.length == 1) {
-                            return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
-                        }
-                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }));
-            }
-            Method reflectMethod = BaseRepositoryImpl.class.getDeclaredMethod("configureHttpMethod", HttpMethod.class);
-            reflectMethod.setAccessible(true);
-            reflectMethod.invoke(taskRepository, method);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return method;
     }
 
     public static String addSchemeIfNoneSpecified(TaskRepository taskRepository, @Nullable String url) {
@@ -109,13 +70,37 @@ public class HttpUtils {
         return url;
     }
 
-    private static String b_executeMethod(TaskRepository taskRepository, HttpMethod method) throws Exception {
-        String responseBody;
+    private static String b_executeMethod(TaskRepository taskRepository, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables) throws Exception {
+        HttpMethod method;
+        if (requestType == HTTPMethod.GET) {
+            method = new GetMethod(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables));
+        } else {
+            int n = requestUrl.indexOf('?');
+            String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
+            method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
+            String[] queryParams = requestUrl.substring(n + 1).split("&");
+            ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
+                String[] nv = s.split("=");
+                try {
+                    if (nv.length == 1) {
+                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+                    }
+                    return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }));
+        }
+        Method configureHttpMethod = BaseRepositoryImpl.class.getDeclaredMethod("configureHttpMethod", HttpMethod.class);
+        configureHttpMethod.setAccessible(true);
+        configureHttpMethod.invoke(taskRepository, method);
+
         Method reflectMethod = BaseRepositoryImpl.class.getDeclaredMethod("getHttpClient");
         reflectMethod.setAccessible(true);
         HttpClient httpClient = (HttpClient) reflectMethod.invoke(taskRepository);
         httpClient.executeMethod(method);
         Header contentType = method.getResponseHeader("Content-Type");
+        String responseBody;
         if (contentType != null && contentType.getValue().contains("charset")) {
             // ISO-8859-1 if charset wasn't specified in response
             responseBody = StringUtil.notNullize(method.getResponseBodyAsString());
@@ -136,6 +121,33 @@ public class HttpUtils {
             throw new Exception("Request failed with HTTP error: " + method.getStatusText());
         }
         return responseBody;
+    }
+
+    private static String nb_executeMethod(TaskRepository taskRepository, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables) throws Exception {
+        Method reflectMethod = NewBaseRepositoryImpl.class.getDeclaredMethod("getHttpClient");
+        reflectMethod.setAccessible(true);
+        org.apache.http.client.HttpClient httpClient = (org.apache.http.client.HttpClient) reflectMethod.invoke(taskRepository);
+        return executeRequest(httpClient, requestUrl, requestType, requestTemplateVariables);
+    }
+
+    public static String executeRequest(org.apache.http.client.HttpClient httpClient, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables) throws Exception {
+        int n = requestUrl.indexOf('?');
+        String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
+        URIBuilder uri = new URIBuilder(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
+        String[] queryParams = requestUrl.substring(n + 1).split("&");
+        for (String queryParam : queryParams) {
+            String[] nv = queryParam.split("=");
+            try {
+                if (nv.length == 1) {
+                    uri.addParameter(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+                }
+                uri.addParameter(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        HttpUriRequest uriRequest = requestType == HTTPMethod.GET ? new HttpGet(uri.build()) : new HttpPost(uri.build());
+        return httpClient.execute(uriRequest, new BasicResponseHandler());
     }
 
     private static String getDefaultScheme(BaseRepository taskRepository) {

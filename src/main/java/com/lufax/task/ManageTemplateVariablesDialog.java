@@ -8,7 +8,6 @@ import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.util.ui.AbstractTableCellEditor;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
-import org.apache.http.client.HttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,14 +17,14 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.List;
 
-public class SuperManageTemplateVariablesDialog extends DialogWrapper {
+public class ManageTemplateVariablesDialog extends DialogWrapper {
   private final SuperTemplateVariablesTable myTemplateVariableTable;
 
-  public SuperManageTemplateVariablesDialog(@NotNull final Component parent) {
+  public ManageTemplateVariablesDialog(@NotNull final Component parent) {
     this(parent, true);
   }
 
-  public SuperManageTemplateVariablesDialog(@NotNull final Component parent, boolean needShowOnFirstTabColumn) {
+  public ManageTemplateVariablesDialog(@NotNull final Component parent, boolean needShowOnFirstTabColumn) {
     super(parent, true);
     myTemplateVariableTable = new SuperTemplateVariablesTable(needShowOnFirstTabColumn);
     setTitle(TaskBundle.message("dialog.title.template.variables"));

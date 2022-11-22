@@ -7,7 +7,7 @@ import com.intellij.openapi.util.NlsContexts;
 import com.intellij.ui.EditorTextField;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.net.HTTPMethod;
-import com.lufax.task.SuperManageTemplateVariablesDialog;
+import com.lufax.task.ManageTemplateVariablesDialog;
 import com.lufax.task.utils.HttpUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         manageTemplateVariablesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final SuperManageTemplateVariablesDialog dialog = new SuperManageTemplateVariablesDialog(manageTemplateVariablesButton, false);
+                final ManageTemplateVariablesDialog dialog = new ManageTemplateVariablesDialog(manageTemplateVariablesButton, false);
                 TaskUpdateConfigsState taskUpdateConfigsState = TaskUpdateConfigsState.getInstance(project);
                 dialog.setTemplateVariables(taskUpdateConfigsState.getUpdateConfig().getAllTemplateVariables());
                 if (dialog.showAndGet()) {

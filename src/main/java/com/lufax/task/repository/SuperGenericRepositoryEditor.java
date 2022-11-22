@@ -1,4 +1,4 @@
-package com.lufax.task;
+package com.lufax.task.repository;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -14,6 +14,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.net.HTTPMethod;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
+import com.lufax.task.ManageTemplateVariablesDialog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,8 +55,8 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   private JButton myTestLoginButton;
   private JButton myTestSingleTaskButton;
   private JTextField loginSuccessCookieNameText;
-  private EditorTextField myLoginURLWithTokenText;
-  private JLabel myLoginURLWithTokenLabel;
+  private EditorTextField myLoginWithTokenURLText;
+  private JLabel myLoginWithTokenURLLabel;
   private JLabel loginSuccessCookieNameLabel;
   private ComboBox myLoginWithTokenMethodTypeComboBox;
 
@@ -120,16 +121,16 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     installListener(myTasksListMethodTypeComboBox);
     installListener(mySingleTaskMethodComboBox);
     installListener(myLoginURLText);
-    installListener(myLoginURLWithTokenText);
+    installListener(myLoginWithTokenURLText);
     installListener(myTasksListURLText);
     installListener(mySingleTaskURLText);
     installListener(myDownloadTasksInSeparateRequests);
     myTabbedPane.addTab(TaskBundle.message("server.configuration"), myPanel);
 
     // Put appropriate configuration components on the card panel
-    ResponseHandler xmlHandler = myRepository.getResponseHandler(ResponseType.XML);
-    ResponseHandler jsonHandler = myRepository.getResponseHandler(ResponseType.JSON);
-    ResponseHandler textHandler = myRepository.getResponseHandler(ResponseType.TEXT);
+    SuperResponseHandler xmlHandler = myRepository.getResponseHandler(ResponseType.XML);
+    SuperResponseHandler jsonHandler = myRepository.getResponseHandler(ResponseType.JSON);
+    SuperResponseHandler textHandler = myRepository.getResponseHandler(ResponseType.TEXT);
     // Select appropriate card pane
     myCardPanel.add(xmlHandler.getConfigurationComponent(myProject), ResponseType.XML.getMimeType());
     myCardPanel.add(jsonHandler.getConfigurationComponent(myProject), ResponseType.JSON.getMimeType());
@@ -143,7 +144,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myManageTemplateVariablesButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        final SuperManageTemplateVariablesDialog dialog = new SuperManageTemplateVariablesDialog(myManageTemplateVariablesButton);
+        final ManageTemplateVariablesDialog dialog = new ManageTemplateVariablesDialog(myManageTemplateVariablesButton);
         dialog.setTemplateVariables(myRepository.getAllTemplateVariables());
         if (dialog.showAndGet()) {
           myRepository.setTemplateVariables(ContainerUtil.filter(dialog.getTemplateVariables(), variable -> !variable.isReadOnly()));
@@ -153,9 +154,9 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
           myTabbedPane.getComponentAt(0).repaint();
 
           //myLoginURLText = createEditorFieldWithPlaceholderCompletion(myRepository.getLoginUrl());
-          List<String> placeholders = createPlaceholdersList(myRepository);
+          List<String> placeholders = createPlaceholdersList(myRepository.getAllTemplateVariables());
           ((TextFieldWithAutoCompletion)myLoginURLText).setVariants(placeholders);
-          ((TextFieldWithAutoCompletion)myLoginURLWithTokenText).setVariants(concat(placeholders, "{dynamicToken}"));
+          ((TextFieldWithAutoCompletion) myLoginWithTokenURLText).setVariants(concat(placeholders, "{dynamicToken}"));
           ((TextFieldWithAutoCompletion)myTasksListURLText).setVariants(concat(placeholders, "{max}", "{since}"));
           ((TextFieldWithAutoCompletion)mySingleTaskURLText).setVariants(concat(placeholders, "{id}"));
           myPanel.repaint();
@@ -193,8 +194,8 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myLoginURLText.setEnabled(enabled);
     loginSuccessCookieNameLabel.setEnabled(enabled);
     loginSuccessCookieNameText.setEnabled(enabled);
-    myLoginURLWithTokenLabel.setEnabled(enabled);
-    myLoginURLWithTokenText.setEnabled(enabled);
+    myLoginWithTokenURLLabel.setEnabled(enabled);
+    myLoginWithTokenURLText.setEnabled(enabled);
     myLoginMethodTypeComboBox.setEnabled(enabled);
     myLoginWithTokenMethodTypeComboBox.setEnabled(enabled);
   }
@@ -219,7 +220,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
 
   protected void reset(final SuperGenericRepository clone) {
     myLoginURLText.setText(clone.getLoginUrl());
-    myLoginURLWithTokenText.setText(clone.getLoginUrlWithToken());
+    myLoginWithTokenURLText.setText(clone.getLoginWithTokenUrl());
     loginSuccessCookieNameText.setText(clone.getLoginSuccessCookieName());
     myTasksListURLText.setText(clone.getTasksListUrl());
     mySingleTaskURLText.setText(clone.getSingleTaskUrl());
@@ -251,7 +252,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   public void apply() {
     myRepository.setLoginUrl(myLoginURLText.getText());
     myRepository.setLoginSuccessCookieName(loginSuccessCookieNameText.getText());
-    myRepository.setLoginUrlWithToken(myLoginURLWithTokenText.getText());
+    myRepository.setLoginWithTokenUrl(myLoginWithTokenURLText.getText());
     myRepository.setTasksListUrl(myTasksListURLText.getText());
     myRepository.setSingleTaskUrl(mySingleTaskURLText.getText());
 
@@ -275,9 +276,9 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   }
 
   private void createUIComponents() {
-    List<String> placeholders = createPlaceholdersList(myRepository);
+    List<String> placeholders = createPlaceholdersList(myRepository.getAllTemplateVariables());
     myLoginURLText = createTextFieldWithCompletion(myRepository.getLoginUrl(), placeholders);
-    myLoginURLWithTokenText = createTextFieldWithCompletion(myRepository.getLoginUrlWithToken(), concat(placeholders, "{dynamicToken}"));
+    myLoginWithTokenURLText = createTextFieldWithCompletion(myRepository.getLoginWithTokenUrl(), concat(placeholders, "{dynamicToken}"));
     myTasksListURLText = createTextFieldWithCompletion(myRepository.getTasksListUrl(), concat(placeholders, "{max}", "{since}"));
     mySingleTaskURLText = createTextFieldWithCompletion(myRepository.getSingleTaskUrl(), concat(placeholders, "{id}"));
   }

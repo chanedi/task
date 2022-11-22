@@ -28,7 +28,7 @@
         <projectService serviceImplementation="com.lufax.task.config.TaskUpdateConfigsState"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij.tasks">
-        <repositoryType implementation="com.lufax.task.SuperGenericRepositoryType" />
+        <repositoryType implementation="com.lufax.task.repository.SuperGenericRepositoryType" />
     </extensions>
 
     <actions>
