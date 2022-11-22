@@ -13,6 +13,7 @@ import com.intellij.tasks.TaskRepository;
 import com.intellij.tasks.impl.TaskManagerImpl;
 import com.intellij.util.xmlb.annotations.Tag;
 import com.intellij.util.xmlb.annotations.XCollection;
+import com.lufax.task.repository.SuperGenericRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +58,7 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
     }
     config.updateConfigList = new ArrayList<>(repositoriesOrderWillBeLoad.size());
     for (TaskRepository taskRepository : repositoriesOrderWillBeLoad) {
-      TaskUpdateConfig updateConfig = updateConfigMap.get(taskRepository);
+      TaskUpdateConfig updateConfig = getUpdateConfig(taskRepository);
       if (updateConfig == null) {
         updateConfig = new TaskUpdateConfig(taskRepository);
       }
@@ -125,6 +126,22 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
 
   public TaskUpdateConfig getUpdateConfig(TaskRepository repository) {
     TaskUpdateConfig updateConfig = updateConfigMap.get(repository);
+    if (updateConfig == null) {
+      for (TaskRepository taskRepository : updateConfigMap.keySet()) {
+        if (repository instanceof SuperGenericRepository) {
+          if (((SuperGenericRepository) repository).idEquals(taskRepository)) {
+            updateConfig = updateConfigMap.get(taskRepository);
+            break;
+          } else {
+            continue;
+          }
+        } else if (taskRepository.getClass().equals(repository.getClass()) && taskRepository.getPresentableName().equals(repository.getPresentableName())) {
+          updateConfig = updateConfigMap.get(taskRepository);
+        }
+
+      }
+      updateConfigMap.put(repository, updateConfig);
+    }
     if (updateConfig == null) {
       updateConfig = new TaskUpdateConfig(repository);
       updateConfigMap.put(repository, updateConfig);

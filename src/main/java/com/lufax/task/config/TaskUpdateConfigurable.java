@@ -109,4 +109,5 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
 //        private JButton completeManageTemplateVariablesButton;
 //        private JButton cancelManageTemplateVariablesButton;
     }
+
 }

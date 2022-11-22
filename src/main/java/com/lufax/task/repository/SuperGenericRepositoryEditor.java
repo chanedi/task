@@ -54,10 +54,10 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   private JBCheckBox myDownloadTasksInSeparateRequests;
   private JButton myTestLoginButton;
   private JButton myTestSingleTaskButton;
-  private JTextField loginSuccessCookieNameText;
+  private JTextField myLoginSuccessCookieNameText;
   private EditorTextField myLoginWithTokenURLText;
   private JLabel myLoginWithTokenURLLabel;
-  private JLabel loginSuccessCookieNameLabel;
+  private JLabel myLoginSuccessCookieNameLabel;
   private ComboBox myLoginWithTokenMethodTypeComboBox;
 
   private Map<JTextField, TemplateVariable> myField2Variable;
@@ -192,8 +192,8 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     boolean enabled = !myLoginAnonymouslyJBCheckBox.isSelected() && !myUseHttpAuthenticationCheckBox.isSelected();
     myLoginURLLabel.setEnabled(enabled);
     myLoginURLText.setEnabled(enabled);
-    loginSuccessCookieNameLabel.setEnabled(enabled);
-    loginSuccessCookieNameText.setEnabled(enabled);
+    myLoginSuccessCookieNameLabel.setEnabled(enabled);
+    myLoginSuccessCookieNameText.setEnabled(enabled);
     myLoginWithTokenURLLabel.setEnabled(enabled);
     myLoginWithTokenURLText.setEnabled(enabled);
     myLoginMethodTypeComboBox.setEnabled(enabled);
@@ -221,7 +221,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   protected void reset(final SuperGenericRepository clone) {
     myLoginURLText.setText(clone.getLoginUrl());
     myLoginWithTokenURLText.setText(clone.getLoginWithTokenUrl());
-    loginSuccessCookieNameText.setText(clone.getLoginSuccessCookieName());
+    myLoginSuccessCookieNameText.setText(clone.getLoginSuccessCookieName());
     myTasksListURLText.setText(clone.getTasksListUrl());
     mySingleTaskURLText.setText(clone.getSingleTaskUrl());
     //myTaskPatternText.setText(clone.getTaskPattern());
@@ -251,7 +251,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   @Override
   public void apply() {
     myRepository.setLoginUrl(myLoginURLText.getText());
-    myRepository.setLoginSuccessCookieName(loginSuccessCookieNameText.getText());
+    myRepository.setLoginSuccessCookieName(myLoginSuccessCookieNameText.getText());
     myRepository.setLoginWithTokenUrl(myLoginWithTokenURLText.getText());
     myRepository.setTasksListUrl(myTasksListURLText.getText());
     myRepository.setSingleTaskUrl(mySingleTaskURLText.getText());

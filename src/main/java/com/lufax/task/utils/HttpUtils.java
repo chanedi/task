@@ -1,5 +1,6 @@
 package com.lufax.task.utils;
 
+import com.google.gson.JsonObject;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.util.text.StringUtil;
@@ -16,11 +17,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.message.BasicNameValuePair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -31,6 +34,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HttpUtils {
@@ -78,18 +82,20 @@ public class HttpUtils {
             int n = requestUrl.indexOf('?');
             String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
             method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
-            String[] queryParams = requestUrl.substring(n + 1).split("&");
-            ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
-                String[] nv = s.split("=");
-                try {
-                    if (nv.length == 1) {
-                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+            if (n >= 0) {
+                String[] queryParams = requestUrl.substring(n + 1).split("&");
+                ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
+                    String[] nv = s.split("=");
+                    try {
+                        if (nv.length == 1) {
+                            return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+                        }
+                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
-                    return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }));
+                }));
+            }
         }
         Method configureHttpMethod = BaseRepositoryImpl.class.getDeclaredMethod("configureHttpMethod", HttpMethod.class);
         configureHttpMethod.setAccessible(true);
@@ -131,22 +137,30 @@ public class HttpUtils {
     }
 
     public static String executeRequest(org.apache.http.client.HttpClient httpClient, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables) throws Exception {
-        int n = requestUrl.indexOf('?');
-        String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
-        URIBuilder uri = new URIBuilder(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
-        String[] queryParams = requestUrl.substring(n + 1).split("&");
-        for (String queryParam : queryParams) {
-            String[] nv = queryParam.split("=");
-            try {
-                if (nv.length == 1) {
-                    uri.addParameter(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+        HttpUriRequest uriRequest;
+        if (requestType == HTTPMethod.GET) {
+            uriRequest = new HttpGet(new URIBuilder(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables)).build());
+        } else {
+            int n = requestUrl.indexOf('?');
+            String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
+            uriRequest = new HttpPost(new URIBuilder(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables)).build());
+            if (n >= 0) {
+                String[] queryParams = requestUrl.substring(n + 1).split("&");
+                List<BasicNameValuePair> parameters = new ArrayList<>();
+                for (String queryParam : queryParams) {
+                    String[] nv = queryParam.split("=");
+                    try {
+                        if (nv.length == 1) {
+                            parameters.add(new BasicNameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), ""));
+                        }
+                        parameters.add(new BasicNameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false)));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-                uri.addParameter(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                ((HttpPost) uriRequest).setEntity(new UrlEncodedFormEntity(parameters));
             }
         }
-        HttpUriRequest uriRequest = requestType == HTTPMethod.GET ? new HttpGet(uri.build()) : new HttpPost(uri.build());
         return httpClient.execute(uriRequest, new BasicResponseHandler());
     }
 

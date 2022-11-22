@@ -8,12 +8,14 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.TaskRepositorySubtype;
 import com.intellij.tasks.TaskRepositoryType;
+import com.intellij.tasks.generic.GenericRepository;
 import com.intellij.tasks.generic.ResponseType;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.tasks.impl.httpclient.NewBaseRepositoryImpl;
@@ -76,18 +78,15 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     private final List<FactoryVariable> myPredefinedTemplateVariables = Arrays.asList(myServerTemplateVariable,
             myUserNameTemplateVariable,
             myPasswordTemplateVariable);
-    @Attribute
+    @Attribute("id")
     private String id;
     private String myLoginURL = "";
-    @Attribute("loginWithTokenURL")
     private String myLoginWithTokenURL = "";
     private String myTasksListUrl = "";
     private String mySingleTaskUrl;
-    @Attribute
-    private String loginSuccessCookieName;
+    private String myLoginSuccessCookieName;
 
     private HTTPMethod myLoginMethodType = HTTPMethod.GET;
-    @Attribute("loginWithTokenMethodType")
     private HTTPMethod myLoginWithTokenMethodType = HTTPMethod.GET;
     private HTTPMethod myTasksListMethodType = HTTPMethod.GET;
     private HTTPMethod mySingleTaskMethodType = HTTPMethod.GET;
@@ -122,7 +121,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         id = other.getId();
         myLoginURL = other.getLoginUrl();
         myLoginWithTokenURL = other.getLoginWithTokenUrl();
-        loginSuccessCookieName = other.getLoginSuccessCookieName();
+        myLoginSuccessCookieName = other.getLoginSuccessCookieName();
         myTasksListUrl = other.getTasksListUrl();
         mySingleTaskUrl = other.getSingleTaskUrl();
 
@@ -146,7 +145,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     public void resetToDefaults() {
         myLoginURL = "";
         myLoginWithTokenURL = "";
-        loginSuccessCookieName = "";
+        myLoginSuccessCookieName = "";
         myTasksListUrl = "";
         mySingleTaskUrl = "";
         myDownloadTasksInSeparateRequests = false;
@@ -170,6 +169,28 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
 
     @Override
     public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SuperGenericRepository)) return false;
+        if (!super.equals(o)) return false;
+        SuperGenericRepository that = (SuperGenericRepository)o;
+        if (!Objects.equals(getId(), that.getId())) return false;
+        if (!Objects.equals(getLoginUrl(), that.getLoginUrl())) return false;
+        if (!Objects.equals(getLoginWithTokenUrl(), that.getLoginWithTokenUrl())) return false;
+        if (!Objects.equals(getTasksListUrl(), that.getTasksListUrl())) return false;
+        if (!Objects.equals(getSingleTaskUrl(), that.getSingleTaskUrl())) return false;
+        if (!Objects.equals(getLoginSuccessCookieName(), that.getLoginSuccessCookieName())) return false;
+        if (!Comparing.equal(getLoginMethodType(), that.getLoginMethodType())) return false;
+        if (!Comparing.equal(getLoginWithTokenMethodType(), that.getLoginWithTokenMethodType())) return false;
+        if (!Comparing.equal(getTasksListMethodType(), that.getTasksListMethodType())) return false;
+        if (!Comparing.equal(getSingleTaskMethodType(), that.getSingleTaskMethodType())) return false;
+        if (!Comparing.equal(getResponseType(), that.getResponseType())) return false;
+        if (!Comparing.equal(getTemplateVariables(), that.getTemplateVariables())) return false;
+        if (!Comparing.equal(getResponseHandlers(), that.getResponseHandlers())) return false;
+        if (!Comparing.equal(getDownloadTasksInSeparateRequests(), that.getDownloadTasksInSeparateRequests())) return false;
+        return true;
+    }
+
+    public boolean idEquals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof SuperGenericRepository)) return false;
         SuperGenericRepository that = (SuperGenericRepository)o;
@@ -307,7 +328,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     }
 
     public void setLoginSuccessCookieName(String loginSuccessCookieName) {
-        this.loginSuccessCookieName = loginSuccessCookieName;
+        this.myLoginSuccessCookieName = loginSuccessCookieName;
     }
 
     public void setTasksListUrl(final String tasksListUrl) {
@@ -327,7 +348,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     }
 
     public String getLoginSuccessCookieName() {
-        return loginSuccessCookieName;
+        return myLoginSuccessCookieName;
     }
 
     public String getTasksListUrl() {
