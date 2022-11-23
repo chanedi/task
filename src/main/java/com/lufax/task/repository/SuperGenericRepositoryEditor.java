@@ -4,7 +4,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.config.BaseRepositoryEditor;
-import com.intellij.tasks.generic.*;
+import com.intellij.tasks.generic.ResponseType;
+import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.TextFieldWithAutoCompletion;
 import com.intellij.ui.components.JBCheckBox;
@@ -15,7 +16,7 @@ import com.intellij.util.net.HTTPMethod;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
 import com.lufax.task.ManageTemplateVariablesDialog;
-import org.jetbrains.annotations.NotNull;
+import com.lufax.task.utils.SwingUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.intellij.tasks.generic.GenericRepositoryUtil.*;
-import static com.intellij.ui.TextFieldWithAutoCompletion.StringsCompletionProvider;
 
 /**
  * @author Evgeny.Zakrevsky
@@ -112,6 +112,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myTextRadioButton.addActionListener(radioButtonListener);
     myJsonRadioButton.addActionListener(radioButtonListener);
 
+    myLoginSuccessCookieNameText.setText(myRepository.getLoginSuccessCookieName());
     myLoginMethodTypeComboBox.setSelectedItem(myRepository.getLoginMethodType().toString()); //NON-NLS
     myTasksListMethodTypeComboBox.setSelectedItem(myRepository.getTasksListMethodType().toString()); //NON-NLS
     mySingleTaskMethodComboBox.setSelectedItem(myRepository.getSingleTaskMethodType().toString()); //NON-NLS
@@ -121,6 +122,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     installListener(myTasksListMethodTypeComboBox);
     installListener(mySingleTaskMethodComboBox);
     installListener(myLoginURLText);
+    installListener(myLoginSuccessCookieNameText);
     installListener(myLoginWithTokenURLText);
     installListener(myTasksListURLText);
     installListener(mySingleTaskURLText);
@@ -277,25 +279,10 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
 
   private void createUIComponents() {
     List<String> placeholders = createPlaceholdersList(myRepository.getAllTemplateVariables());
-    myLoginURLText = createTextFieldWithCompletion(myRepository.getLoginUrl(), placeholders);
-    myLoginWithTokenURLText = createTextFieldWithCompletion(myRepository.getLoginWithTokenUrl(), concat(placeholders, "{dynamicToken}"));
-    myTasksListURLText = createTextFieldWithCompletion(myRepository.getTasksListUrl(), concat(placeholders, "{max}", "{since}"));
-    mySingleTaskURLText = createTextFieldWithCompletion(myRepository.getSingleTaskUrl(), concat(placeholders, "{id}"));
-  }
-
-  private TextFieldWithAutoCompletion<String> createTextFieldWithCompletion(String text, final List<String> variants) {
-    final StringsCompletionProvider provider = new StringsCompletionProvider(variants, null) {
-      @Nullable
-      @Override
-      public String getPrefix(@NotNull String text, int offset) {
-        final int i = text.lastIndexOf('{', offset - 1);
-        if (i < 0) {
-          return "";
-        }
-        return text.substring(i, offset);
-      }
-    };
-    return new TextFieldWithAutoCompletion<>(myProject, provider, true, text);
+    myLoginURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getLoginUrl(), placeholders);
+    myLoginWithTokenURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getLoginWithTokenUrl(), concat(placeholders, "{dynamicToken}"));
+    myTasksListURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getTasksListUrl(), concat(placeholders, "{max}", "{since}"));
+    mySingleTaskURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getSingleTaskUrl(), concat(placeholders, "{id}"));
   }
 
   @Override

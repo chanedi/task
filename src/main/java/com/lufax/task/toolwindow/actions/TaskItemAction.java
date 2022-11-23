@@ -7,12 +7,15 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.ui.table.JBTable;
-import com.lufax.task.config.TaskUpdateConfig;
-import com.lufax.task.config.TaskUpdateConfigsState;
+import com.lufax.task.repository.SuperGenericTask;
+import com.lufax.task.toolwindow.TaskUpdateConfig;
+import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.toolwindow.TaskListTableModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.lufax.task.repository.SelectorBasedSuperResponseHandler.*;
 
 public abstract class TaskItemAction extends AnAction {
 
@@ -21,7 +24,12 @@ public abstract class TaskItemAction extends AnAction {
         TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(getEventProject(e));
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
         List<TemplateVariable> templateVariables = new ArrayList<>(updateConfig.getTemplateVariables());
-        templateVariables.add(new TemplateVariable(TaskUpdateConfig.TASK_ID, selectedTask.getId()));
+        templateVariables.add(new TemplateVariable(ID, selectedTask.getId()));
+        templateVariables.add(new TemplateVariable(SUMMARY, selectedTask.getSummary()));
+        if (selectedTask instanceof SuperGenericTask) {
+            templateVariables.add(new TemplateVariable(STATUS, ((SuperGenericTask) selectedTask).getStatus()));
+            templateVariables.add(new TemplateVariable(RELEASE_DATE, ((SuperGenericTask) selectedTask).getReleaseDate()));
+        }
         return templateVariables;
     }
 

@@ -5,9 +5,8 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.TaskRepository;
-import com.intellij.tasks.impl.TaskManagerImpl;
-import com.lufax.task.config.TaskUpdateConfig;
-import com.lufax.task.config.TaskUpdateConfigsState;
+import com.lufax.task.toolwindow.TaskUpdateConfig;
+import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.toolwindow.TaskToolWindowPanel;
 import org.jetbrains.annotations.NotNull;
 

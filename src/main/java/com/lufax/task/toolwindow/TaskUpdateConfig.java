@@ -1,4 +1,4 @@
-package com.lufax.task.config;
+package com.lufax.task.toolwindow;
 
 import com.intellij.tasks.TaskRepository;
 import com.intellij.tasks.generic.TemplateVariable;
@@ -12,7 +12,6 @@ import java.util.List;
 
 public class TaskUpdateConfig {
 
-    public static String TASK_ID = "taskId";
     private String name;
     private String detailUrl;
     private String completeUrl;
@@ -20,13 +19,6 @@ public class TaskUpdateConfig {
     private List<TemplateVariable> templateVariables = new ArrayList<>();
     private String cancelUrl;
     private HTTPMethod cancelMethod;
-
-    private final List<TemplateVariable.FactoryVariable> myPredefinedTemplateVariables = Arrays.asList(new TemplateVariable.FactoryVariable(TASK_ID, false) {
-        @Override
-        public @NotNull String getValue() {
-            return TASK_ID;
-        }
-    });
 
     public TaskUpdateConfig() {
     }
@@ -74,7 +66,7 @@ public class TaskUpdateConfig {
     }
 
     public List<TemplateVariable> getAllTemplateVariables() {
-        return ContainerUtil.concat(myPredefinedTemplateVariables, getTemplateVariables());
+        return getTemplateVariables();
     }
 
     public void setTemplateVariables(List<TemplateVariable> templateVariables) {

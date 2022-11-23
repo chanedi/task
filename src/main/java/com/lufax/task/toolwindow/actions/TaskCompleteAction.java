@@ -2,8 +2,8 @@ package com.lufax.task.toolwindow.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.tasks.TaskRepository;
-import com.lufax.task.config.TaskUpdateConfig;
-import com.lufax.task.config.TaskUpdateConfigsState;
+import com.lufax.task.toolwindow.TaskUpdateConfig;
+import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.utils.HttpUtils;
 import org.jetbrains.annotations.NotNull;
 

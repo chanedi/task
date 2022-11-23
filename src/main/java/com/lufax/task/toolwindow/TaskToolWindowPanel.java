@@ -10,7 +10,6 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.tasks.TaskRepository;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.table.JBTable;
-import com.lufax.task.config.TaskUpdateConfigsState;
 import com.lufax.task.toolwindow.actions.TaskServerSelectAction;
 import com.lufax.task.toolwindow.actions.TaskUpdateConfigAction;
 import org.jetbrains.annotations.NotNull;

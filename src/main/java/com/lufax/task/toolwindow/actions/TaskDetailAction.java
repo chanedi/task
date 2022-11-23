@@ -3,8 +3,8 @@ package com.lufax.task.toolwindow.actions;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.tasks.generic.GenericRepositoryUtil;
-import com.lufax.task.config.TaskUpdateConfig;
-import com.lufax.task.config.TaskUpdateConfigsState;
+import com.lufax.task.toolwindow.TaskUpdateConfig;
+import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import org.jetbrains.annotations.NotNull;
 
 public class TaskDetailAction extends TaskItemAction {

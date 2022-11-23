@@ -33,7 +33,9 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
   // Supported selector names
   @NonNls protected static final String TASKS = "tasks";
 
-  @NonNls protected static final String SUMMARY = "summary";
+  @NonNls public static final String SUMMARY = "summary";
+  @NonNls public static final String STATUS = "status";
+  @NonNls public static final String RELEASE_DATE = "releaseDate";
   @NonNls protected static final String DESCRIPTION = "description";
   @NonNls protected static final String ISSUE_URL = "issueUrl";
   @NonNls protected static final String CLOSED = "closed";
@@ -42,12 +44,14 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
 
   @NonNls protected static final String SINGLE_TASK_ID = "singleTask-id";
   @NonNls protected static final String SINGLE_TASK_SUMMARY = "singleTask-summary";
+  @NonNls protected static final String SINGLE_TASK_STATUS = "singleTask-status";
+  @NonNls protected static final String SINGLE_TASK_RELEASE_DATE = "singleTask-releaseDate";
   @NonNls protected static final String SINGLE_TASK_DESCRIPTION = "singleTask-description";
   @NonNls protected static final String SINGLE_TASK_ISSUE_URL = "singleTask-issueUrl";
   @NonNls protected static final String SINGLE_TASK_CLOSED = "singleTask-closed";
   @NonNls protected static final String SINGLE_TASK_UPDATED = "singleTask-updated";
   @NonNls protected static final String SINGLE_TASK_CREATED = "singleTask-created";
-  @NonNls protected static final String ID = "id";
+  @NonNls public static final String ID = "id";
 
   protected LinkedHashMap<String, Selector> mySelectors = new LinkedHashMap<>();
 
@@ -69,6 +73,8 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
       // matched against single tasks extracted from the list downloaded from "taskListUrl"
       new Selector(ID),
       new Selector(SUMMARY),
+      new Selector(STATUS),
+      new Selector(RELEASE_DATE),
       new Selector(DESCRIPTION),
       new Selector(UPDATED),
       new Selector(CREATED),
@@ -78,6 +84,8 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
       // matched against single task downloaded from "singleTaskUrl"
       new Selector(SINGLE_TASK_ID),
       new Selector(SINGLE_TASK_SUMMARY),
+      new Selector(SINGLE_TASK_STATUS),
+      new Selector(SINGLE_TASK_RELEASE_DATE),
       new Selector(SINGLE_TASK_DESCRIPTION),
       new Selector(SINGLE_TASK_UPDATED),
       new Selector(SINGLE_TASK_CREATED),
@@ -169,17 +177,25 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
     List<Task> result = new ArrayList<>(tasks.size());
     for (Object context : tasks) {
       String id = selectString(getSelector(ID), context);
-      GenericTask task;
+      SuperGenericTask task;
       if (myRepository.getDownloadTasksInSeparateRequests()) {
-        task = new GenericTask(id, "", myRepository);
+        task = new SuperGenericTask(id, "", myRepository);
       }
       else {
         String summary = selectString(getSelector(SUMMARY), context);
         assert id != null && summary != null;
-        task = new GenericTask(id, summary, myRepository);
+        task = new SuperGenericTask(id, summary, myRepository);
         String description = selectString(getSelector(DESCRIPTION), context);
         if (description != null) {
           task.setDescription(description);
+        }
+        String status = selectString(getSelector(STATUS), context);
+        if (status != null) {
+          task.setStatus(status);
+        }
+        String releaseDate = selectString(getSelector(RELEASE_DATE), context);
+        if (releaseDate != null) {
+          task.setReleaseDate(releaseDate);
         }
         String issueUrl = selectString(getSelector(ISSUE_URL), context);
         if (issueUrl != null) {
@@ -245,10 +261,18 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
     String id = selectString(getSelector(SINGLE_TASK_ID), response);
     String summary = selectString(getSelector(SINGLE_TASK_SUMMARY), response);
     assert id != null && summary != null;
-    GenericTask task = new GenericTask(id, summary, myRepository);
+    SuperGenericTask task = new SuperGenericTask(id, summary, myRepository);
     String description = selectString(getSelector(SINGLE_TASK_DESCRIPTION), response);
     if (description != null) {
       task.setDescription(description);
+    }
+    String status = selectString(getSelector(SINGLE_TASK_STATUS), response);
+    if (status != null) {
+      task.setStatus(status);
+    }
+    String releaseDate = selectString(getSelector(SINGLE_TASK_RELEASE_DATE), response);
+    if (releaseDate != null) {
+      task.setReleaseDate(releaseDate);
     }
     String issueUrl = selectString(getSelector(SINGLE_TASK_ISSUE_URL), response);
     if (issueUrl != null) {

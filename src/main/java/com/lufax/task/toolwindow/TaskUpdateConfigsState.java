@@ -1,6 +1,6 @@
 // Copyright 2000-2022 JetBrains s.r.o. and other contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 
-package com.lufax.task.config;
+package com.lufax.task.toolwindow;
 
 import com.intellij.configurationStore.XmlSerializer;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -14,14 +14,13 @@ import com.intellij.tasks.impl.TaskManagerImpl;
 import com.intellij.util.xmlb.annotations.Tag;
 import com.intellij.util.xmlb.annotations.XCollection;
 import com.lufax.task.repository.SuperGenericRepository;
-import org.apache.commons.collections.CollectionUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@State(name = "com.lufax.task.config.TaskUpdateConfigState", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
+@State(name = "com.lufax.task.toolwindow.config.TaskUpdateConfigState", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
 public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpdateConfigsState.Config> {
 
   private TaskRepository selectedTaskRepository;

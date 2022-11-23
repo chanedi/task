@@ -168,7 +168,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(final Object o) { // equals时不会更新xml文件，编辑无法保存
         if (this == o) return true;
         if (!(o instanceof SuperGenericRepository)) return false;
         if (!super.equals(o)) return false;
@@ -281,9 +281,8 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
-//                s_executeMethod(getLoginMethod());
-//                String result = getIssues("", 0, 1, false);
-//                throw new ProcessNeedResultException(result);
+                String result = HttpUtils.executeRequest(getHttpClient(), getTasksListUrl(), myTasksListMethodType, getAllTemplateVariables());
+                throw new ProcessNeedResultException(result);
             }
 
             @Override
@@ -298,9 +297,8 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
-//                s_executeMethod(getLoginMethod());
-//                String result = s_executeMethod(getTaskListMethod(1, 0));
-//                throw new ProcessNeedResultException(result);
+                String result = HttpUtils.executeRequest(getHttpClient(), getSingleTaskUrl(), mySingleTaskMethodType, getAllTemplateVariables());
+                throw new ProcessNeedResultException(result);
             }
 
             @Override
