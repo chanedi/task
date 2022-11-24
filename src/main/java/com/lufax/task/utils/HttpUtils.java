@@ -17,12 +17,20 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HeaderIterator;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.cookie.CookieSpec;
+import org.apache.http.cookie.SM;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.cookie.DefaultCookieSpec;
 import org.apache.http.message.BasicNameValuePair;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,6 +61,37 @@ public class HttpUtils {
         } else {
             throw new RuntimeException("Unsupported Repository Type:" + taskRepository.getClass());
         }
+    }
+
+    public static HttpMethod getHttpMethod(BaseRepositoryImpl taskRepository, String requestUrl, HTTPMethod type, List<TemplateVariable> requestTemplateVariables) {
+        HttpMethod method;
+        try {
+            if (type == HTTPMethod.GET) {
+                method = new GetMethod(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables));
+            } else {
+                int n = requestUrl.indexOf('?');
+                String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
+                method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
+                String[] queryParams = requestUrl.substring(n + 1).split("&");
+                ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
+                    String[] nv = s.split("=");
+                    try {
+                        if (nv.length == 1) {
+                            return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+                        }
+                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }));
+            }
+            Method reflectMethod = BaseRepositoryImpl.class.getDeclaredMethod("configureHttpMethod", HttpMethod.class);
+            reflectMethod.setAccessible(true);
+            reflectMethod.invoke(taskRepository, method);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return method;
     }
 
     public static String addSchemeIfNoneSpecified(TaskRepository taskRepository, @Nullable String url) {
@@ -137,6 +176,10 @@ public class HttpUtils {
     }
 
     public static String executeRequest(org.apache.http.client.HttpClient httpClient, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables) throws Exception {
+        return executeRequest(httpClient, requestUrl, requestType, requestTemplateVariables, new BasicResponseHandler());
+    }
+
+    public static <T> T executeRequest(org.apache.http.client.HttpClient httpClient, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables, ResponseHandler<? extends T> responseHandler) throws Exception {
         HttpUriRequest uriRequest;
         if (requestType == HTTPMethod.GET) {
             uriRequest = new HttpGet(new URIBuilder(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables)).build());
@@ -161,7 +204,7 @@ public class HttpUtils {
                 ((HttpPost) uriRequest).setEntity(new UrlEncodedFormEntity(parameters));
             }
         }
-        return httpClient.execute(uriRequest, new BasicResponseHandler());
+        return httpClient.execute(uriRequest, responseHandler);
     }
 
     private static String getDefaultScheme(BaseRepository taskRepository) {

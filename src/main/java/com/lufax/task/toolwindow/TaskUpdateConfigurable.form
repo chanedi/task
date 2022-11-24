@@ -73,6 +73,7 @@
             </constraints>
             <properties>
               <background color="-12828863"/>
+              <toolTipText value="非SuperGenericRepository仅支持变量：id、summary、description"/>
             </properties>
           </component>
         </children>
@@ -104,7 +105,9 @@
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="非SuperGenericRepository仅支持变量：id、summary、description"/>
+            </properties>
           </component>
           <component id="8191b" class="javax.swing.JComboBox" binding="completeMethodCombo">
             <constraints>
@@ -141,7 +144,9 @@
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="非SuperGenericRepository仅支持变量：id、summary、description"/>
+            </properties>
           </component>
           <component id="2ebbd" class="javax.swing.JComboBox" binding="cancelMethodCombo">
             <constraints>

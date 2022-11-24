@@ -76,7 +76,7 @@
           </hspacer>
         </children>
       </grid>
-      <grid id="2e934" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="2e934" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="7" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -103,6 +103,17 @@
             </constraints>
             <properties>
               <text resource-bundle="messages/TaskBundle" key="reset.to.defaults"/>
+            </properties>
+          </component>
+          <component id="90cf1" class="javax.swing.JButton" binding="myTestParseTaskButton">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="true"/>
+              <text resource-bundle="messages/TaskBundle" key="test"/>
+              <toolTipText value="任务解析测试"/>
+              <visible value="true"/>
             </properties>
           </component>
         </children>
@@ -168,7 +179,10 @@
       </component>
       <component id="d1239" class="com.intellij.openapi.ui.ComboBox" binding="myTasksListMethodTypeComboBox">
         <constraints>
-          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+            <maximum-size width="80" height="-1"/>
+          </grid>
         </constraints>
         <properties>
           <model>
@@ -179,7 +193,10 @@
       </component>
       <component id="76f26" class="com.intellij.openapi.ui.ComboBox" binding="mySingleTaskMethodComboBox">
         <constraints>
-          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+            <maximum-size width="80" height="-1"/>
+          </grid>
         </constraints>
         <properties>
           <model>
@@ -190,7 +207,10 @@
       </component>
       <component id="eee0a" class="com.intellij.openapi.ui.ComboBox" binding="myLoginMethodTypeComboBox">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+            <maximum-size width="80" height="-1"/>
+          </grid>
         </constraints>
         <properties>
           <model>
@@ -201,7 +221,9 @@
       </component>
       <component id="55bdd" class="javax.swing.JButton" binding="myTestLoginButton">
         <constraints>
-          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+          </grid>
         </constraints>
         <properties>
           <text resource-bundle="messages/TaskBundle" key="test"/>
@@ -209,20 +231,12 @@
       </component>
       <component id="536c8" class="javax.swing.JButton" binding="myTest2Button">
         <constraints>
-          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+          </grid>
         </constraints>
         <properties>
           <text resource-bundle="messages/TaskBundle" key="test"/>
-        </properties>
-      </component>
-      <component id="90cf1" class="javax.swing.JButton" binding="myTestSingleTaskButton">
-        <constraints>
-          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="true"/>
-          <text resource-bundle="messages/TaskBundle" key="test"/>
-          <toolTipText value=""/>
         </properties>
       </component>
       <component id="3c45e" class="javax.swing.JLabel" binding="myLoginWithTokenURLLabel">
@@ -231,6 +245,7 @@
         </constraints>
         <properties>
           <text value="Login URL With Token:"/>
+          <visible value="true"/>
         </properties>
       </component>
       <component id="ff6ca" class="com.intellij.ui.EditorTextField" binding="myLoginWithTokenURLText" custom-create="true">
@@ -239,25 +254,34 @@
             <preferred-size width="10" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <visible value="true"/>
+        </properties>
       </component>
       <component id="fa3bc" class="com.intellij.openapi.ui.ComboBox" binding="myLoginWithTokenMethodTypeComboBox">
         <constraints>
-          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+            <maximum-size width="80" height="-1"/>
+          </grid>
         </constraints>
         <properties>
           <model>
             <item value="GET"/>
             <item value="POST"/>
           </model>
+          <visible value="true"/>
         </properties>
       </component>
-      <component id="86f28" class="javax.swing.JButton">
+      <component id="86f28" class="javax.swing.JButton" binding="myTestLoginWithTokenButton">
         <constraints>
-          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+          </grid>
         </constraints>
         <properties>
           <text resource-bundle="messages/TaskBundle" key="test"/>
+          <visible value="true"/>
         </properties>
       </component>
       <component id="c50b2" class="javax.swing.JLabel" binding="myLoginSuccessCookieNameLabel">
@@ -266,6 +290,7 @@
         </constraints>
         <properties>
           <text value="Login Success Cookie Name:"/>
+          <visible value="true"/>
         </properties>
       </component>
       <component id="76ee" class="javax.swing.JTextField" binding="myLoginSuccessCookieNameText">
@@ -276,6 +301,7 @@
         </constraints>
         <properties>
           <background color="-12828863"/>
+          <visible value="true"/>
         </properties>
       </component>
     </children>

@@ -10,29 +10,38 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.NlsContexts;
+import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.TaskRepositorySubtype;
 import com.intellij.tasks.TaskRepositoryType;
-import com.intellij.tasks.generic.GenericRepository;
 import com.intellij.tasks.generic.ResponseType;
 import com.intellij.tasks.generic.TemplateVariable;
-import com.intellij.tasks.impl.httpclient.NewBaseRepositoryImpl;
+import com.intellij.tasks.impl.BaseRepositoryImpl;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.net.HTTPMethod;
 import com.intellij.util.xmlb.annotations.Attribute;
 import com.intellij.util.xmlb.annotations.Tag;
 import com.intellij.util.xmlb.annotations.XCollection;
+import com.lufax.task.NeedDynamicTokenException;
 import com.lufax.task.ProcessNeedResultException;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.StringUtils;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +54,7 @@ import static com.intellij.tasks.generic.TemplateVariable.FactoryVariable;
  * @author Evgeny.Zakrevsky
  */
 @Tag("SuperGeneric")
-public class SuperGenericRepository extends NewBaseRepositoryImpl {
+public class SuperGenericRepository extends BaseRepositoryImpl {
 
     private static final Logger LOG = Logger.getInstance(SuperGenericRepository.class);
 
@@ -99,6 +108,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
 
     private String mySubtypeName;
     private boolean myDownloadTasksInSeparateRequests;
+    private ThreadLocal<Boolean> needCheckCookieName = new ThreadLocal<>();
 
     /**
      * Serialization constructor
@@ -210,18 +220,15 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     }
 
     @Override
-    public Task[] getIssues(@Nullable String query, int offset, int limit, boolean withClosed) throws Exception {
+    public Task[] getIssues(@Nullable final String query, final int max, final long since) throws Exception {
         if (StringUtil.isEmpty(myTasksListUrl)) {
             throw new Exception("'Task list URL' configuration parameter is mandatory");
         }
         if (!isLoginAnonymously() && !isUseHttpAuthentication()) {
-            HttpUtils.executeRequest(getHttpClient(), getLoginUrl(), myLoginMethodType, getAllTemplateVariables());
+            executeMethod(getLoginMethod());
         }
-        List<TemplateVariable> variables = concat(getAllTemplateVariables(),
-                new TemplateVariable("offset", String.valueOf(offset)),
-                new TemplateVariable("limit", String.valueOf(limit)));
-        String responseBody = HttpUtils.executeRequest(getHttpClient(), getTasksListUrl(), myTasksListMethodType, variables);
-        Task[] tasks = getActiveResponseHandler().parseIssues(responseBody, limit);
+        String responseBody = executeMethod(getTaskListMethod(max, since));
+        Task[] tasks = getActiveResponseHandler().parseIssues(responseBody, max);
         if (myResponseType == ResponseType.TEXT) {
             return tasks;
         }
@@ -233,11 +240,59 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         return tasks;
     }
 
+    private String executeMethod(HttpMethod method) throws Exception {
+        String responseBody;
+        getHttpClient().executeMethod(method);
+        Header contentType = method.getResponseHeader("Content-Type");
+        if (contentType != null && contentType.getValue().contains("charset")) {
+            // ISO-8859-1 if charset wasn't specified in response
+            responseBody = StringUtil.notNullize(method.getResponseBodyAsString());
+        }
+        else {
+            InputStream stream = method.getResponseBodyAsStream();
+            if (stream == null) {
+                responseBody = "";
+            }
+            else {
+                try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+                    responseBody = StreamUtil.readText(reader);
+                }
+            }
+        }
+        if (method.getStatusCode() != HttpStatus.SC_OK) {
+            throw new Exception("Request failed with HTTP error: " + method.getStatusText());
+        }
+        return responseBody;
+    }
+
+    public HttpMethod getHttpMethod(String requestUrl, HTTPMethod type, List<TemplateVariable> requestTemplateVariables) {
+        return HttpUtils.getHttpMethod(this, requestUrl, type, requestTemplateVariables);
+    }
+
+    public HttpMethod getLoginMethod() {
+        return getHttpMethod(getLoginUrl(), getLoginMethodType(), getAllTemplateVariables());
+    }
+
+    public HttpMethod getLoginWithTokenMethod(List<TemplateVariable> variables) {
+        return getHttpMethod(getLoginWithTokenUrl(), getLoginWithTokenMethodType(), variables);
+    }
+
+    public HttpMethod getTaskListMethod(final int max, final long since) {
+        List<TemplateVariable> variables = concat(getAllTemplateVariables(),
+                new TemplateVariable("max", String.valueOf(max)),
+                new TemplateVariable("since", String.valueOf(since)));
+        return getHttpMethod(getTasksListUrl(), getTasksListMethodType(), variables);
+    }
+
+    public HttpMethod getSingleTaskMethod(@NotNull final String id) {
+        List<TemplateVariable> variables = concat(getAllTemplateVariables(), new TemplateVariable("id", id));
+        return getHttpMethod(getSingleTaskUrl(), getSingleTaskMethodType(), variables);
+    }
+
     @Nullable
     @Override
     public Task findTask(@NotNull final String id) throws Exception {
-        List<TemplateVariable> variables = concat(getAllTemplateVariables(), new TemplateVariable("id", id));
-        return getActiveResponseHandler().parseIssue(HttpUtils.executeRequest(getHttpClient(), getSingleTaskUrl(), mySingleTaskMethodType, variables));
+        return getActiveResponseHandler().parseIssue(executeMethod(getSingleTaskMethod(id)));
     }
 
     @Nullable
@@ -246,7 +301,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         return new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
-                getIssues("", 1, 0, false);
+                getIssues("", 1, 0);
             }
 
             @Override
@@ -258,13 +313,26 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     public boolean testLoginConnection(@NotNull Project project) {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
-            protected void doTest() {
-                String result = null;
-                try {
-                    result = HttpUtils.executeRequest(getHttpClient(), getLoginUrl(), myLoginMethodType, getAllTemplateVariables());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+            protected void doTest() throws Exception {
+                String result = executeMethod(getLoginMethod());
+                throw new ProcessNeedResultException(result);
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+        };
+
+        return tryConnection(project, myConnection);
+    }
+
+    public boolean testLoginWithTokenConnection(@NotNull Project project) {
+        List<TemplateVariable> variables = getLoginWithTokenTemplateVariables();
+        @Nullable CancellableConnection myConnection = new CancellableConnection() {
+            @Override
+            protected void doTest() throws Exception {
+                String result = executeMethod(getLoginWithTokenMethod(variables));
                 throw new ProcessNeedResultException(result);
             }
 
@@ -281,23 +349,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
-                String result = HttpUtils.executeRequest(getHttpClient(), getTasksListUrl(), myTasksListMethodType, getAllTemplateVariables());
-                throw new ProcessNeedResultException(result);
-            }
-
-            @Override
-            public void cancel() {
-            }
-        };
-
-        return tryConnection(project, myConnection);
-    }
-
-    public boolean testSingleTaskConnection(@NotNull Project project) {
-        @Nullable CancellableConnection myConnection = new CancellableConnection() {
-            @Override
-            protected void doTest() throws Exception {
-                String result = HttpUtils.executeRequest(getHttpClient(), getSingleTaskUrl(), mySingleTaskMethodType, getAllTemplateVariables());
+                String result = executeMethod(getTaskListMethod(1, 0));
                 throw new ProcessNeedResultException(result);
             }
 
@@ -428,11 +480,6 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         throw new AssertionError("Unknown repository subtype");
     }
 
-    @Override
-    protected int getFeatures() {
-        return LOGIN_ANONYMOUSLY | BASIC_HTTP_AUTHORIZATION;
-    }
-
     public SuperResponseHandler getResponseHandler(ResponseType type) {
         return myResponseHandlersMap.get(type);
     }
@@ -556,6 +603,30 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
             Messages.showErrorDialog(project, StringUtil.capitalize(message), TaskBundle.message("dialog.title.error"));
         }
         return e == null;
+    }
+
+    private String login() throws Exception {
+        try {
+            try {
+                needCheckCookieName.set(true);
+                return executeMethod(getLoginMethod());
+            } finally {
+                needCheckCookieName.remove();
+            }
+        } catch (NeedDynamicTokenException e) {
+            List<TemplateVariable> variables = getLoginWithTokenTemplateVariables();
+            return executeMethod(getLoginWithTokenMethod(variables));
+        }
+    }
+
+    private List<TemplateVariable> getLoginWithTokenTemplateVariables() {
+        List<TemplateVariable> variables = getAllTemplateVariables();
+        if (myLoginWithTokenURL.contains("{dynamicToken}")) {
+            String dynamicToken = Messages.showInputDialog("Please input dynamic token for login:", "Need Login With Token", null);
+            variables = concat(getAllTemplateVariables(),
+                    new TemplateVariable("dynamicToken", dynamicToken));
+        }
+        return variables;
     }
 
     private abstract class TestConnectionTask extends com.intellij.openapi.progress.Task.Modal {

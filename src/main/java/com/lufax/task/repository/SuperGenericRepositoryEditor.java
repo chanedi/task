@@ -3,6 +3,7 @@ package com.lufax.task.repository;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.tasks.TaskBundle;
+import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.config.BaseRepositoryEditor;
 import com.intellij.tasks.generic.ResponseType;
 import com.intellij.tasks.generic.TemplateVariable;
@@ -53,12 +54,13 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   private JBLabel mySingleTaskURLLabel;
   private JBCheckBox myDownloadTasksInSeparateRequests;
   private JButton myTestLoginButton;
-  private JButton myTestSingleTaskButton;
+  private JButton myTestParseTaskButton;
   private JTextField myLoginSuccessCookieNameText;
   private EditorTextField myLoginWithTokenURLText;
   private JLabel myLoginWithTokenURLLabel;
   private JLabel myLoginSuccessCookieNameLabel;
   private ComboBox myLoginWithTokenMethodTypeComboBox;
+  private JButton myTestLoginWithTokenButton;
 
   private Map<JTextField, TemplateVariable> myField2Variable;
   private final Map<JRadioButton, ResponseType> myRadio2ResponseType;
@@ -80,11 +82,16 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
         afterTestConnection(repository.testLoginConnection(project));
       }
     });
-    myTestSingleTaskButton.addActionListener(new ActionListener() {
+    myTestLoginWithTokenButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        afterTestConnection(repository.testSingleTaskConnection(project));
+        afterTestConnection(repository.testLoginWithTokenConnection(project));
       }
+    });
+    myTestParseTaskButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        afterTestConnection(TaskManager.getManager(project).testConnection(repository));      }
     });
 
     myLoginAnonymouslyJBCheckBox.addActionListener(new ActionListener() {
@@ -114,11 +121,13 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
 
     myLoginSuccessCookieNameText.setText(myRepository.getLoginSuccessCookieName());
     myLoginMethodTypeComboBox.setSelectedItem(myRepository.getLoginMethodType().toString()); //NON-NLS
+    myLoginWithTokenMethodTypeComboBox.setSelectedItem(myRepository.getLoginWithTokenMethodType().toString()); //NON-NLS
     myTasksListMethodTypeComboBox.setSelectedItem(myRepository.getTasksListMethodType().toString()); //NON-NLS
     mySingleTaskMethodComboBox.setSelectedItem(myRepository.getSingleTaskMethodType().toString()); //NON-NLS
 
     // set default listener updating model fields
     installListener(myLoginMethodTypeComboBox);
+    installListener(myLoginWithTokenMethodTypeComboBox);
     installListener(myTasksListMethodTypeComboBox);
     installListener(mySingleTaskMethodComboBox);
     installListener(myLoginURLText);
@@ -157,10 +166,10 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
 
           //myLoginURLText = createEditorFieldWithPlaceholderCompletion(myRepository.getLoginUrl());
           List<String> placeholders = createPlaceholdersList(myRepository.getAllTemplateVariables());
-          ((TextFieldWithAutoCompletion)myLoginURLText).setVariants(placeholders);
+          ((TextFieldWithAutoCompletion) myLoginURLText).setVariants(placeholders);
           ((TextFieldWithAutoCompletion) myLoginWithTokenURLText).setVariants(concat(placeholders, "{dynamicToken}"));
-          ((TextFieldWithAutoCompletion)myTasksListURLText).setVariants(concat(placeholders, "{max}", "{since}"));
-          ((TextFieldWithAutoCompletion)mySingleTaskURLText).setVariants(concat(placeholders, "{id}"));
+          ((TextFieldWithAutoCompletion) myTasksListURLText).setVariants(concat(placeholders, "{max}", "{since}"));
+          ((TextFieldWithAutoCompletion) mySingleTaskURLText).setVariants(concat(placeholders, "{id}"));
           myPanel.repaint();
         }
       }

@@ -36,11 +36,17 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
   @NonNls public static final String SUMMARY = "summary";
   @NonNls public static final String STATUS = "status";
   @NonNls public static final String RELEASE_DATE = "releaseDate";
-  @NonNls protected static final String DESCRIPTION = "description";
+  @NonNls public static final String DESCRIPTION = "description";
   @NonNls protected static final String ISSUE_URL = "issueUrl";
   @NonNls protected static final String CLOSED = "closed";
   @NonNls protected static final String UPDATED = "updated";
   @NonNls protected static final String CREATED = "created";
+  @NonNls public static final String CUSTOM_FIELD_1 = "customField1";
+  @NonNls public static final String CUSTOM_FIELD_2 = "customField2";
+  @NonNls public static final String CUSTOM_FIELD_3 = "customField3";
+  @NonNls public static final String CUSTOM_FIELD_4 = "customField4";
+  @NonNls public static final String CUSTOM_FIELD_5 = "customField5";
+
 
   @NonNls protected static final String SINGLE_TASK_ID = "singleTask-id";
   @NonNls protected static final String SINGLE_TASK_SUMMARY = "singleTask-summary";
@@ -51,6 +57,12 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
   @NonNls protected static final String SINGLE_TASK_CLOSED = "singleTask-closed";
   @NonNls protected static final String SINGLE_TASK_UPDATED = "singleTask-updated";
   @NonNls protected static final String SINGLE_TASK_CREATED = "singleTask-created";
+  @NonNls protected static final String SINGLE_TASK_CUSTOM_FIELD_1 = "singleTask-customField1";
+  @NonNls protected static final String SINGLE_TASK_CUSTOM_FIELD_2 = "singleTask-customField2";
+  @NonNls protected static final String SINGLE_TASK_CUSTOM_FIELD_3 = "singleTask-customField3";
+  @NonNls protected static final String SINGLE_TASK_CUSTOM_FIELD_4 = "singleTask-customField4";
+  @NonNls protected static final String SINGLE_TASK_CUSTOM_FIELD_5 = "singleTask-customField5";
+
   @NonNls public static final String ID = "id";
 
   protected LinkedHashMap<String, Selector> mySelectors = new LinkedHashMap<>();
@@ -75,6 +87,11 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
       new Selector(SUMMARY),
       new Selector(STATUS),
       new Selector(RELEASE_DATE),
+      new Selector(CUSTOM_FIELD_1),
+      new Selector(CUSTOM_FIELD_2),
+      new Selector(CUSTOM_FIELD_3),
+      new Selector(CUSTOM_FIELD_4),
+      new Selector(CUSTOM_FIELD_5),
       new Selector(DESCRIPTION),
       new Selector(UPDATED),
       new Selector(CREATED),
@@ -86,6 +103,11 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
       new Selector(SINGLE_TASK_SUMMARY),
       new Selector(SINGLE_TASK_STATUS),
       new Selector(SINGLE_TASK_RELEASE_DATE),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_1),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_2),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_3),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_4),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_5),
       new Selector(SINGLE_TASK_DESCRIPTION),
       new Selector(SINGLE_TASK_UPDATED),
       new Selector(SINGLE_TASK_CREATED),
@@ -197,6 +219,26 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
         if (releaseDate != null) {
           task.setReleaseDate(releaseDate);
         }
+        String customField1 = selectString(getSelector(CUSTOM_FIELD_1), context);
+        if (customField1 != null) {
+          task.setCustomField1(customField1);
+        }
+        String customField2 = selectString(getSelector(CUSTOM_FIELD_2), context);
+        if (customField2 != null) {
+          task.setCustomField2(customField2);
+        }
+        String customField3 = selectString(getSelector(CUSTOM_FIELD_3), context);
+        if (customField3 != null) {
+          task.setCustomField3(customField3);
+        }
+        String customField4 = selectString(getSelector(CUSTOM_FIELD_4), context);
+        if (customField4 != null) {
+          task.setCustomField4(customField4);
+        }
+        String customField5 = selectString(getSelector(CUSTOM_FIELD_5), context);
+        if (customField5 != null) {
+          task.setCustomField5(customField5);
+        }
         String issueUrl = selectString(getSelector(ISSUE_URL), context);
         if (issueUrl != null) {
           task.setIssueUrl(issueUrl);
@@ -273,6 +315,26 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
     String releaseDate = selectString(getSelector(SINGLE_TASK_RELEASE_DATE), response);
     if (releaseDate != null) {
       task.setReleaseDate(releaseDate);
+    }
+    String customField1 = selectString(getSelector(SINGLE_TASK_CUSTOM_FIELD_1), response);
+    if (customField1 != null) {
+      task.setCustomField1(customField1);
+    }
+    String customField2 = selectString(getSelector(SINGLE_TASK_CUSTOM_FIELD_2), response);
+    if (customField2 != null) {
+      task.setCustomField2(customField2);
+    }
+    String customField3 = selectString(getSelector(SINGLE_TASK_CUSTOM_FIELD_3), response);
+    if (customField3 != null) {
+      task.setCustomField3(customField3);
+    }
+    String customField4 = selectString(getSelector(SINGLE_TASK_CUSTOM_FIELD_4), response);
+    if (customField4 != null) {
+      task.setCustomField4(customField4);
+    }
+    String customField5 = selectString(getSelector(SINGLE_TASK_CUSTOM_FIELD_5), response);
+    if (customField5 != null) {
+      task.setCustomField5(customField5);
     }
     String issueUrl = selectString(getSelector(SINGLE_TASK_ISSUE_URL), response);
     if (issueUrl != null) {

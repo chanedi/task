@@ -3,9 +3,11 @@ package com.lufax.task.toolwindow;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskRepository;
+import com.intellij.tasks.generic.GenericTask;
 import com.intellij.ui.AnActionButton;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
+import com.lufax.task.repository.SuperGenericTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -27,15 +29,26 @@ public class TaskListTableModel extends ListTableModel<Task> {
             public @Nullable String valueOf(Task task) {
                 return task.getSummary();
             }
+        }, new ColumnInfo<Task, String>("ReleaseDate") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getReleaseDate() == null ? "" : ((SuperGenericTask) task).getReleaseDate();
+                }
+                return "";
+            }
+        }, new ColumnInfo<Task, String>("Status") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getStatus() == null ? "" : ((SuperGenericTask) task).getStatus();
+                }
+                return task.getState() == null ? "" : task.getState().name();
+            }
         }, new ColumnInfo<Task, String>("Description") {
             @Override
             public @Nullable String valueOf(Task task) {
                 return task.getDescription();
-            }
-        }, new ColumnInfo<Task, String>("State") {
-            @Override
-            public @Nullable String valueOf(Task task) {
-                return task.getState() == null ? "" : task.getState().name();
             }
         });
     }

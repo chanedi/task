@@ -26,9 +26,15 @@ public abstract class TaskItemAction extends AnAction {
         List<TemplateVariable> templateVariables = new ArrayList<>(updateConfig.getTemplateVariables());
         templateVariables.add(new TemplateVariable(ID, selectedTask.getId()));
         templateVariables.add(new TemplateVariable(SUMMARY, selectedTask.getSummary()));
+        templateVariables.add(new TemplateVariable(DESCRIPTION, selectedTask.getDescription()));
         if (selectedTask instanceof SuperGenericTask) {
             templateVariables.add(new TemplateVariable(STATUS, ((SuperGenericTask) selectedTask).getStatus()));
             templateVariables.add(new TemplateVariable(RELEASE_DATE, ((SuperGenericTask) selectedTask).getReleaseDate()));
+            templateVariables.add(new TemplateVariable(CUSTOM_FIELD_1, ((SuperGenericTask) selectedTask).getCustomField1()));
+            templateVariables.add(new TemplateVariable(CUSTOM_FIELD_2, ((SuperGenericTask) selectedTask).getCustomField2()));
+            templateVariables.add(new TemplateVariable(CUSTOM_FIELD_3, ((SuperGenericTask) selectedTask).getCustomField3()));
+            templateVariables.add(new TemplateVariable(CUSTOM_FIELD_4, ((SuperGenericTask) selectedTask).getCustomField4()));
+            templateVariables.add(new TemplateVariable(CUSTOM_FIELD_5, ((SuperGenericTask) selectedTask).getCustomField5()));
         }
         return templateVariables;
     }

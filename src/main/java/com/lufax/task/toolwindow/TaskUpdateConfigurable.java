@@ -65,7 +65,7 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         TaskUpdateConfigsState taskUpdateConfigsState = TaskUpdateConfigsState.getInstance(myProject);
         TaskUpdateConfig updateConfig = taskUpdateConfigsState.getUpdateConfig();
         List<String> placeholders = createPlaceholdersList(updateConfig.getAllTemplateVariables());
-        placeholders = concat(placeholders, ID, SUMMARY, STATUS, RELEASE_DATE);
+        placeholders = concat(placeholders, ID, SUMMARY, STATUS, RELEASE_DATE, DESCRIPTION, CUSTOM_FIELD_1, CUSTOM_FIELD_2, CUSTOM_FIELD_3, CUSTOM_FIELD_4, CUSTOM_FIELD_5);
         myDetailUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getDetailUrl(), placeholders);
         myCompleteUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCompleteUrl(), placeholders);
         myCancelUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCancelUrl(), placeholders);
