@@ -16,7 +16,8 @@ public class TaskCompleteAction extends TaskItemAction {
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
         TaskRepository taskRepository = configsState.getSelectedTaskRepository();
         try {
-            HttpUtils.executeMethod(taskRepository, updateConfig.getCompleteMethod(), updateConfig.getCompleteUrl(), getTemplateVariables(e));
+            String result = HttpUtils.executeMethod(taskRepository, updateConfig.getCompleteMethod(), updateConfig.getCompleteUrl(), getTemplateVariables(e));
+            Messages.showInfoMessage(result, "Complete task result");
         } catch (Exception ex) {
             Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when complete task");
             throw new RuntimeException(ex);

@@ -16,7 +16,8 @@ public class TaskCancelAction extends TaskItemAction {
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
         TaskRepository taskRepository = configsState.getSelectedTaskRepository();
         try {
-            HttpUtils.executeMethod(taskRepository, updateConfig.getCancelMethod(), updateConfig.getCancelUrl(), getTemplateVariables(e));
+            String result = HttpUtils.executeMethod(taskRepository, updateConfig.getCancelMethod(), updateConfig.getCancelUrl(), getTemplateVariables(e));
+            Messages.showInfoMessage(result, "Complete task result");
         } catch (Exception ex) {
             Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when cancel task");
             throw new RuntimeException(ex);
