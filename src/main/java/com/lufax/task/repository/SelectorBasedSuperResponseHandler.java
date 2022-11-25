@@ -36,6 +36,7 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
   @NonNls public static final String SUMMARY = "summary";
   @NonNls public static final String STATUS = "status";
   @NonNls public static final String RELEASE_DATE = "releaseDate";
+  @NonNls public static final String TAG = "tag";
   @NonNls public static final String DESCRIPTION = "description";
   @NonNls protected static final String ISSUE_URL = "issueUrl";
   @NonNls protected static final String CLOSED = "closed";
@@ -52,6 +53,7 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
   @NonNls protected static final String SINGLE_TASK_SUMMARY = "singleTask-summary";
   @NonNls protected static final String SINGLE_TASK_STATUS = "singleTask-status";
   @NonNls protected static final String SINGLE_TASK_RELEASE_DATE = "singleTask-releaseDate";
+  @NonNls protected static final String SINGLE_TASK_TAG = "singleTask-tag";
   @NonNls protected static final String SINGLE_TASK_DESCRIPTION = "singleTask-description";
   @NonNls protected static final String SINGLE_TASK_ISSUE_URL = "singleTask-issueUrl";
   @NonNls protected static final String SINGLE_TASK_CLOSED = "singleTask-closed";
@@ -87,32 +89,34 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
       new Selector(SUMMARY),
       new Selector(STATUS),
       new Selector(RELEASE_DATE),
-      new Selector(CUSTOM_FIELD_1),
-      new Selector(CUSTOM_FIELD_2),
-      new Selector(CUSTOM_FIELD_3),
-      new Selector(CUSTOM_FIELD_4),
-      new Selector(CUSTOM_FIELD_5),
+      new Selector(TAG),
       new Selector(DESCRIPTION),
       new Selector(UPDATED),
       new Selector(CREATED),
       new Selector(CLOSED),
       new Selector(ISSUE_URL),
+      new Selector(CUSTOM_FIELD_1),
+      new Selector(CUSTOM_FIELD_2),
+      new Selector(CUSTOM_FIELD_3),
+      new Selector(CUSTOM_FIELD_4),
+      new Selector(CUSTOM_FIELD_5),
 
       // matched against single task downloaded from "singleTaskUrl"
       new Selector(SINGLE_TASK_ID),
       new Selector(SINGLE_TASK_SUMMARY),
       new Selector(SINGLE_TASK_STATUS),
       new Selector(SINGLE_TASK_RELEASE_DATE),
-      new Selector(SINGLE_TASK_CUSTOM_FIELD_1),
-      new Selector(SINGLE_TASK_CUSTOM_FIELD_2),
-      new Selector(SINGLE_TASK_CUSTOM_FIELD_3),
-      new Selector(SINGLE_TASK_CUSTOM_FIELD_4),
-      new Selector(SINGLE_TASK_CUSTOM_FIELD_5),
+      new Selector(SINGLE_TASK_TAG),
       new Selector(SINGLE_TASK_DESCRIPTION),
       new Selector(SINGLE_TASK_UPDATED),
       new Selector(SINGLE_TASK_CREATED),
       new Selector(SINGLE_TASK_CLOSED),
-      new Selector(SINGLE_TASK_ISSUE_URL)
+      new Selector(SINGLE_TASK_ISSUE_URL),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_1),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_2),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_3),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_4),
+      new Selector(SINGLE_TASK_CUSTOM_FIELD_5)
     ));
   }
 
@@ -219,6 +223,10 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
         if (releaseDate != null) {
           task.setReleaseDate(releaseDate);
         }
+        String tag = selectString(getSelector(TAG), context);
+        if (tag != null) {
+          task.setTag(tag);
+        }
         String customField1 = selectString(getSelector(CUSTOM_FIELD_1), context);
         if (customField1 != null) {
           task.setCustomField1(customField1);
@@ -315,6 +323,10 @@ public abstract class SelectorBasedSuperResponseHandler extends SuperResponseHan
     String releaseDate = selectString(getSelector(SINGLE_TASK_RELEASE_DATE), response);
     if (releaseDate != null) {
       task.setReleaseDate(releaseDate);
+    }
+    String tag = selectString(getSelector(SINGLE_TASK_TAG), response);
+    if (tag != null) {
+      task.setTag(tag);
     }
     String customField1 = selectString(getSelector(SINGLE_TASK_CUSTOM_FIELD_1), response);
     if (customField1 != null) {

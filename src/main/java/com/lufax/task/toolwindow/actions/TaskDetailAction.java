@@ -2,6 +2,7 @@ package com.lufax.task.toolwindow.actions;
 
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.tasks.generic.GenericRepositoryUtil;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
 import com.lufax.task.toolwindow.TaskUpdateConfigsState;
@@ -17,7 +18,8 @@ public class TaskDetailAction extends TaskItemAction {
         try {
             detailUrl = GenericRepositoryUtil.substituteTemplateVariables(updateConfig.getDetailUrl(), getTemplateVariables(e));
         } catch (Exception ex) {
-            throw new RuntimeException(ex); // TODO 异常处理
+            Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when open task");
+            throw new RuntimeException(ex);
         }
         BrowserUtil.browse(detailUrl);
     }

@@ -19,6 +19,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.tasks</depends>
+    <depends>Git4Idea</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
@@ -33,6 +34,8 @@
 
     <actions>
         <group id="task.toolWindow.toolbar">
+            <action id="task.refresh" class="com.lufax.task.toolwindow.actions.TaskRefreshAction" text="Refresh Task" icon="AllIcons.Actions.Refresh"/>
+            <separator/>
             <action id="task.local" class="com.lufax.task.toolwindow.actions.GotoLocalTaskAction" text="Open Task" icon="AllIcons.Actions.Selectall"/>
             <action id="task.detail" class="com.lufax.task.toolwindow.actions.TaskDetailAction" text="Task Detail" icon="AllIcons.General.ShowInfos"/>
             <action id="task.complete" class="com.lufax.task.toolwindow.actions.TaskCompleteAction" text="Complete Task" icon="AllIcons.RunConfigurations.ShowPassed"/>

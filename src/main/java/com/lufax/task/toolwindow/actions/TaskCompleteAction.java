@@ -1,6 +1,7 @@
 package com.lufax.task.toolwindow.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.tasks.TaskRepository;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
 import com.lufax.task.toolwindow.TaskUpdateConfigsState;
@@ -15,11 +16,12 @@ public class TaskCompleteAction extends TaskItemAction {
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
         TaskRepository taskRepository = configsState.getSelectedTaskRepository();
         try {
-            String result = HttpUtils.executeMethod(taskRepository, updateConfig.getCompleteMethod(), updateConfig.getCompleteUrl(), getTemplateVariables(e));
-
+            HttpUtils.executeMethod(taskRepository, updateConfig.getCompleteMethod(), updateConfig.getCompleteUrl(), getTemplateVariables(e));
         } catch (Exception ex) {
-            throw new RuntimeException(ex); // TODO 异常处理
+            Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when complete task");
+            throw new RuntimeException(ex);
         }
+        refreshTable(e);
     }
 
     @Override

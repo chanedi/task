@@ -6,13 +6,14 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 public class SuperGenericTask extends GenericTask {
-  private @Nls String myStatus;
-  private @Nls String myReleaseDate;
-  private @Nls String myCustomField1;
-  private @Nls String myCustomField2;
-  private @Nls String myCustomField3;
-  private @Nls String myCustomField4;
-  private @Nls String myCustomField5;
+  private @Nls String myStatus = "";
+  private @Nls String myReleaseDate = "";
+  private @Nls String myTag = "";
+  private @Nls String myCustomField1 = "";
+  private @Nls String myCustomField2 = "";
+  private @Nls String myCustomField3 = "";
+  private @Nls String myCustomField4 = "";
+  private @Nls String myCustomField5 = "";
 
   public SuperGenericTask(final String id, final @Nls String summary, final TaskRepository repository) {
     super(id, summary, repository);
@@ -34,6 +35,14 @@ public class SuperGenericTask extends GenericTask {
 
   public void setReleaseDate(@Nullable @Nls String releaseDate) {
     myReleaseDate = releaseDate;
+  }
+
+  public String getTag() {
+    return myTag;
+  }
+
+  public void setTag(String tag) {
+    this.myTag = tag;
   }
 
   public String getCustomField1() {

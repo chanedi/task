@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.ui.EditorTextField;
 import com.intellij.util.net.HTTPMethod;
+import com.lufax.task.toolwindow.actions.TaskItemAction;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.SwingUtils;
 import org.jetbrains.annotations.NonNls;
@@ -65,7 +66,7 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         TaskUpdateConfigsState taskUpdateConfigsState = TaskUpdateConfigsState.getInstance(myProject);
         TaskUpdateConfig updateConfig = taskUpdateConfigsState.getUpdateConfig();
         List<String> placeholders = createPlaceholdersList(updateConfig.getAllTemplateVariables());
-        placeholders = concat(placeholders, ID, SUMMARY, STATUS, RELEASE_DATE, DESCRIPTION, CUSTOM_FIELD_1, CUSTOM_FIELD_2, CUSTOM_FIELD_3, CUSTOM_FIELD_4, CUSTOM_FIELD_5);
+        placeholders = concat(placeholders, ID, SUMMARY, STATUS, RELEASE_DATE, TAG, DESCRIPTION, TaskItemAction.BRANCH, TaskItemAction.REVISION, CUSTOM_FIELD_1, CUSTOM_FIELD_2, CUSTOM_FIELD_3, CUSTOM_FIELD_4, CUSTOM_FIELD_5);
         myDetailUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getDetailUrl(), placeholders);
         myCompleteUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCompleteUrl(), placeholders);
         myCancelUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCancelUrl(), placeholders);

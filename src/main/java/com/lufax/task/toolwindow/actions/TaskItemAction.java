@@ -1,35 +1,94 @@
 package com.lufax.task.toolwindow.actions;
 
+import com.intellij.dvcs.branch.DvcsTaskHandler;
+import com.intellij.dvcs.repo.AbstractRepositoryManager;
+import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vcs.VcsTaskHandler;
+import com.intellij.tasks.BranchInfo;
 import com.intellij.tasks.Task;
+import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.generic.TemplateVariable;
+import com.intellij.tasks.impl.BaseRepositoryImpl;
 import com.intellij.ui.table.JBTable;
+import com.lufax.task.repository.SuperGenericRepository;
 import com.lufax.task.repository.SuperGenericTask;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
 import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.toolwindow.TaskListTableModel;
+import git4idea.history.GitFileHistory;
+import git4idea.history.GitHistoryProvider;
+import git4idea.repo.GitRepository;
+import git4idea.repo.GitRepositoryManager;
+import git4idea.status.GitChangeProvider;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.httpclient.HttpMethod;
+import org.jetbrains.annotations.NonNls;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.lufax.task.repository.SelectorBasedSuperResponseHandler.*;
 
 public abstract class TaskItemAction extends AnAction {
 
+    public static final String BRANCH = "branchName";
+    public static final String REVISION = "currentRevision";
+
     protected List<TemplateVariable> getTemplateVariables(AnActionEvent e) {
         Task selectedTask = getSelectedTask(e);
         TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(getEventProject(e));
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
+        TaskManager taskManager = TaskManager.getManager(getEventProject(e));
         List<TemplateVariable> templateVariables = new ArrayList<>(updateConfig.getTemplateVariables());
         templateVariables.add(new TemplateVariable(ID, selectedTask.getId()));
         templateVariables.add(new TemplateVariable(SUMMARY, selectedTask.getSummary()));
-        templateVariables.add(new TemplateVariable(DESCRIPTION, selectedTask.getDescription()));
+        templateVariables.add(new TemplateVariable(DESCRIPTION, selectedTask.getDescription() == null ? "" : selectedTask.getDescription()));
+        templateVariables.add(new TemplateVariable(SuperGenericRepository.SERVER_URL, configsState.getSelectedTaskRepository().getUrl()));
+        if (taskManager.isVcsEnabled()) {
+            List<BranchInfo> branches = taskManager.findTask(selectedTask.getId()).getBranches(false);
+            if (branches.size() > 0) {
+                BranchInfo branchInfo = branches.get(0);
+                templateVariables.add(new TemplateVariable(BRANCH, branchInfo.name));
+
+                DvcsTaskHandler dvcsTaskHandler = null;
+                VcsTaskHandler[] allHandlers = VcsTaskHandler.getAllHandlers(getEventProject(e));
+                for (VcsTaskHandler handler : allHandlers) {
+                    if (!(handler instanceof DvcsTaskHandler)) {
+                        continue;
+                    }
+                    dvcsTaskHandler = (DvcsTaskHandler) handler;
+                    break;
+                }
+
+                if (dvcsTaskHandler != null) {
+                    List<String> repositoryUrls = new ArrayList<>();
+                    repositoryUrls.add(branchInfo.repository);
+                    List<? extends Repository> repositories;
+                    try {
+                        Method reflectMethod = DvcsTaskHandler.class.getDeclaredMethod("getRepositories", Collection.class);
+                        reflectMethod.setAccessible(true);
+                        repositories = (List<? extends Repository>) reflectMethod.invoke(dvcsTaskHandler, repositoryUrls);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if (repositories.size() > 0) {
+                        templateVariables.add(new TemplateVariable(REVISION, repositories.get(0).getCurrentRevision()));
+                    }
+                }
+            }
+        }
+
         if (selectedTask instanceof SuperGenericTask) {
             templateVariables.add(new TemplateVariable(STATUS, ((SuperGenericTask) selectedTask).getStatus()));
             templateVariables.add(new TemplateVariable(RELEASE_DATE, ((SuperGenericTask) selectedTask).getReleaseDate()));
+            templateVariables.add(new TemplateVariable(TAG, ((SuperGenericTask) selectedTask).getTag()));
             templateVariables.add(new TemplateVariable(CUSTOM_FIELD_1, ((SuperGenericTask) selectedTask).getCustomField1()));
             templateVariables.add(new TemplateVariable(CUSTOM_FIELD_2, ((SuperGenericTask) selectedTask).getCustomField2()));
             templateVariables.add(new TemplateVariable(CUSTOM_FIELD_3, ((SuperGenericTask) selectedTask).getCustomField3()));
@@ -44,6 +103,13 @@ public abstract class TaskItemAction extends AnAction {
         TaskListTableModel tableModel = (TaskListTableModel) table.getModel();
         Task selectedTask = tableModel.getItem(table.getSelectedRow());
         return selectedTask;
+    }
+
+    protected void refreshTable(AnActionEvent e) {
+        JBTable table = (JBTable) e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
+        TaskListTableModel tableModel = (TaskListTableModel) table.getModel();
+        TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(getEventProject(e));
+        tableModel.updateTaskRepository(configsState.getSelectedTaskRepository());
     }
 
     protected boolean isEnable(AnActionEvent e) {

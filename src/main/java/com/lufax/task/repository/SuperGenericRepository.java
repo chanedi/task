@@ -16,6 +16,7 @@ import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.TaskRepositorySubtype;
 import com.intellij.tasks.TaskRepositoryType;
+import com.intellij.tasks.generic.GenericRepositoryUtil;
 import com.intellij.tasks.generic.ResponseType;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.tasks.impl.BaseRepositoryImpl;
@@ -28,18 +29,19 @@ import com.lufax.task.NeedDynamicTokenException;
 import com.lufax.task.ProcessNeedResultException;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.StringUtils;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -242,7 +244,11 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
 
     private String executeMethod(HttpMethod method) throws Exception {
         String responseBody;
-        getHttpClient().executeMethod(method);
+        try {
+            getHttpClient().executeMethod(method);
+        } catch (NeedDynamicTokenException e) {
+            executeMethod(getLoginWithTokenMethod(getLoginWithTokenTemplateVariables()));
+        }
         Header contentType = method.getResponseHeader("Content-Type");
         if (contentType != null && contentType.getValue().contains("charset")) {
             // ISO-8859-1 if charset wasn't specified in response
@@ -270,7 +276,62 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     }
 
     public HttpMethod getLoginMethod() {
-        return getHttpMethod(getLoginUrl(), getLoginMethodType(), getAllTemplateVariables());
+        if (needCheckCookieName.get() == null) {
+            needCheckCookieName.set(true);
+        }
+        try {
+            if (getLoginMethodType() == HTTPMethod.GET) {
+                return new GetMethod(GenericRepositoryUtil.substituteTemplateVariables(getLoginUrl(), getAllTemplateVariables())) {
+                    @Override
+                    protected void processResponseBody(HttpState state, HttpConnection conn) {
+                        super.processResponseBody(state, conn);
+                        checkCookie(state, conn);
+                    }
+                };
+            } else {
+                int n = getLoginUrl().indexOf('?');
+                String url = n == -1 ? getLoginUrl() : getLoginUrl().substring(0, n);
+                PostMethod method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, getAllTemplateVariables())) {
+                    @Override
+                    protected void processResponseBody(HttpState state, HttpConnection conn) {
+                        super.processResponseBody(state, conn);
+                        checkCookie(state, conn);
+                    }
+                };
+                String[] queryParams = getLoginUrl().substring(n + 1).split("&");
+                method.addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
+                    String[] nv = s.split("=");
+                    try {
+                        if (nv.length == 1) {
+                            return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], getAllTemplateVariables(), false), "");
+                        }
+                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], getAllTemplateVariables(), false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], getAllTemplateVariables(), false));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }));
+                return method;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            needCheckCookieName.remove();
+        }
+    }
+
+    private void checkCookie(HttpState state, HttpConnection conn) {
+        if (getLoginSuccessCookieName() == null) {
+            return;
+        }
+        if (needCheckCookieName.get() == null || !needCheckCookieName.get()) {
+            return;
+        }
+        for (Cookie cookie : state.getCookies()) {
+            if (cookie.getName().equals(getLoginSuccessCookieName())) {
+                return;
+            }
+        }
+        throw new NeedDynamicTokenException();
     }
 
     public HttpMethod getLoginWithTokenMethod(List<TemplateVariable> variables) {
@@ -314,6 +375,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
+                needCheckCookieName.set(false);
                 String result = executeMethod(getLoginMethod());
                 throw new ProcessNeedResultException(result);
             }
@@ -603,20 +665,6 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
             Messages.showErrorDialog(project, StringUtil.capitalize(message), TaskBundle.message("dialog.title.error"));
         }
         return e == null;
-    }
-
-    private String login() throws Exception {
-        try {
-            try {
-                needCheckCookieName.set(true);
-                return executeMethod(getLoginMethod());
-            } finally {
-                needCheckCookieName.remove();
-            }
-        } catch (NeedDynamicTokenException e) {
-            List<TemplateVariable> variables = getLoginWithTokenTemplateVariables();
-            return executeMethod(getLoginWithTokenMethod(variables));
-        }
     }
 
     private List<TemplateVariable> getLoginWithTokenTemplateVariables() {

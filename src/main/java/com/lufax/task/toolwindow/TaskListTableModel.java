@@ -45,10 +45,58 @@ public class TaskListTableModel extends ListTableModel<Task> {
                 }
                 return task.getState() == null ? "" : task.getState().name();
             }
+        }, new ColumnInfo<Task, String>("Tag") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getTag() == null ? "" : ((SuperGenericTask) task).getTag();
+                }
+                return "";
+            }
         }, new ColumnInfo<Task, String>("Description") {
             @Override
             public @Nullable String valueOf(Task task) {
                 return task.getDescription();
+            }
+        }, new ColumnInfo<Task, String>("CustomField1") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getCustomField1() == null ? "" : ((SuperGenericTask) task).getCustomField1();
+                }
+                return "";
+            }
+        }, new ColumnInfo<Task, String>("CustomField2") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getCustomField2() == null ? "" : ((SuperGenericTask) task).getCustomField2();
+                }
+                return "";
+            }
+        }, new ColumnInfo<Task, String>("CustomField3") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getCustomField3() == null ? "" : ((SuperGenericTask) task).getCustomField3();
+                }
+                return "";
+            }
+        }, new ColumnInfo<Task, String>("CustomField4") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getCustomField4() == null ? "" : ((SuperGenericTask) task).getCustomField4();
+                }
+                return "";
+            }
+        }, new ColumnInfo<Task, String>("CustomField5") {
+            @Override
+            public @Nullable String valueOf(Task task) {
+                if (task instanceof SuperGenericTask) {
+                    return ((SuperGenericTask) task).getCustomField5() == null ? "" : ((SuperGenericTask) task).getCustomField5();
+                }
+                return "";
             }
         });
     }

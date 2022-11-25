@@ -15,7 +15,7 @@ intellij {
     version.set("2021.2")
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf("com.intellij.tasks"))
+    plugins.set(listOf("com.intellij.tasks", "Git4Idea"))
 }
 
 tasks {
