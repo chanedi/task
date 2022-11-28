@@ -43,6 +43,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class HttpUtils {
@@ -51,7 +52,7 @@ public class HttpUtils {
 
     public static String executeMethod(TaskRepository taskRepository, HTTPMethod requestType, String requestUrl, List<TemplateVariable> requestTemplateVariables) throws Exception {
         if (CollectionUtils.isNotEmpty(requestTemplateVariables)) {
-            requestUrl = GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables);
+            requestUrl = substituteTemplateVariables(requestUrl, requestTemplateVariables);
         }
 
         if (taskRepository instanceof BaseRepositoryImpl) {
@@ -67,19 +68,19 @@ public class HttpUtils {
         HttpMethod method;
         try {
             if (type == HTTPMethod.GET) {
-                method = new GetMethod(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables));
+                method = new GetMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
             } else {
                 int n = requestUrl.indexOf('?');
                 String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
-                method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
+                method = new PostMethod(substituteTemplateVariables(url, requestTemplateVariables));
                 String[] queryParams = requestUrl.substring(n + 1).split("&");
                 ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
                     String[] nv = s.split("=");
                     try {
                         if (nv.length == 1) {
-                            return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+                            return new NameValuePair(substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
                         }
-                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
+                        return new NameValuePair(substituteTemplateVariables(nv[0], requestTemplateVariables, false), substituteTemplateVariables(nv[1], requestTemplateVariables, false));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -113,23 +114,34 @@ public class HttpUtils {
         return url;
     }
 
+    public static String substituteTemplateVariables(String s, Collection<? extends TemplateVariable> variables) throws Exception {
+        return substituteTemplateVariables(s, variables, true);
+    }
+
+    public static String substituteTemplateVariables(String s, Collection<? extends TemplateVariable> variables, boolean escape) throws Exception {
+        s = GenericRepositoryUtil.substituteTemplateVariables(s, variables, escape);
+//        s = s.replaceAll("\\\\\\{", "{");
+//        s = s.replaceAll("\\\\\\}", "}");
+        return s;
+    }
+
     private static String b_executeMethod(TaskRepository taskRepository, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables) throws Exception {
         HttpMethod method;
         if (requestType == HTTPMethod.GET) {
-            method = new GetMethod(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables));
+            method = new GetMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
         } else {
             int n = requestUrl.indexOf('?');
             String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
-            method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables));
+            method = new PostMethod(substituteTemplateVariables(url, requestTemplateVariables));
             if (n >= 0) {
                 String[] queryParams = requestUrl.substring(n + 1).split("&");
                 ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
                     String[] nv = s.split("=");
                     try {
                         if (nv.length == 1) {
-                            return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
+                            return new NameValuePair(substituteTemplateVariables(nv[0], requestTemplateVariables, false), "");
                         }
-                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false));
+                        return new NameValuePair(substituteTemplateVariables(nv[0], requestTemplateVariables, false), substituteTemplateVariables(nv[1], requestTemplateVariables, false));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -163,7 +175,11 @@ public class HttpUtils {
         }
         LOG.info(responseBody);
         if (method.getStatusCode() != HttpStatus.SC_OK) {
-            throw new Exception("Request failed with HTTP error: " + method.getStatusText());
+            String message = "Request failed with HTTP error: " + method.getStatusText();
+            if (StringUtil.isNotEmpty(responseBody)) {
+                message = message + ". Response body:" + responseBody;
+            }
+            throw new Exception(message);
         }
         return responseBody;
     }
@@ -182,11 +198,11 @@ public class HttpUtils {
     public static <T> T executeRequest(org.apache.http.client.HttpClient httpClient, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables, ResponseHandler<? extends T> responseHandler) throws Exception {
         HttpUriRequest uriRequest;
         if (requestType == HTTPMethod.GET) {
-            uriRequest = new HttpGet(new URIBuilder(GenericRepositoryUtil.substituteTemplateVariables(requestUrl, requestTemplateVariables)).build());
+            uriRequest = new HttpGet(new URIBuilder(substituteTemplateVariables(requestUrl, requestTemplateVariables)).build());
         } else {
             int n = requestUrl.indexOf('?');
             String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
-            uriRequest = new HttpPost(new URIBuilder(GenericRepositoryUtil.substituteTemplateVariables(url, requestTemplateVariables)).build());
+            uriRequest = new HttpPost(new URIBuilder(substituteTemplateVariables(url, requestTemplateVariables)).build());
             if (n >= 0) {
                 String[] queryParams = requestUrl.substring(n + 1).split("&");
                 List<BasicNameValuePair> parameters = new ArrayList<>();
@@ -194,9 +210,9 @@ public class HttpUtils {
                     String[] nv = queryParam.split("=");
                     try {
                         if (nv.length == 1) {
-                            parameters.add(new BasicNameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), ""));
+                            parameters.add(new BasicNameValuePair(substituteTemplateVariables(nv[0], requestTemplateVariables, false), ""));
                         }
-                        parameters.add(new BasicNameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], requestTemplateVariables, false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], requestTemplateVariables, false)));
+                        parameters.add(new BasicNameValuePair(substituteTemplateVariables(nv[0], requestTemplateVariables, false), substituteTemplateVariables(nv[1], requestTemplateVariables, false)));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

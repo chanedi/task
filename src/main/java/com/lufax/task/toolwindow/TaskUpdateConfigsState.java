@@ -124,6 +124,9 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
   }
 
   public TaskUpdateConfig getUpdateConfig(TaskRepository repository) {
+    if (repository == null) {
+      return null;
+    }
     TaskUpdateConfig updateConfig = updateConfigMap.get(repository);
     if (updateConfig == null) {
       for (TaskRepository taskRepository : updateConfigMap.keySet()) {

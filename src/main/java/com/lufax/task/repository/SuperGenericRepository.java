@@ -37,17 +37,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Method;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static com.lufax.task.utils.HttpUtils.*;
 
 import static com.intellij.tasks.generic.GenericRepositoryUtil.concat;
 import static com.intellij.tasks.generic.TemplateVariable.FactoryVariable;
@@ -110,7 +110,6 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
 
     private String mySubtypeName;
     private boolean myDownloadTasksInSeparateRequests;
-    private ThreadLocal<Boolean> needCheckCookieName = new ThreadLocal<>();
 
     /**
      * Serialization constructor
@@ -227,7 +226,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
             throw new Exception("'Task list URL' configuration parameter is mandatory");
         }
         if (!isLoginAnonymously() && !isUseHttpAuthentication()) {
-            executeMethod(getLoginMethod());
+            executeMethod(getLoginMethod(true));
         }
         String responseBody = executeMethod(getTaskListMethod(max, since));
         Task[] tasks = getActiveResponseHandler().parseIssues(responseBody, max);
@@ -275,27 +274,24 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         return HttpUtils.getHttpMethod(this, requestUrl, type, requestTemplateVariables);
     }
 
-    public HttpMethod getLoginMethod() {
-        if (needCheckCookieName.get() == null) {
-            needCheckCookieName.set(true);
-        }
+    public HttpMethod getLoginMethod(boolean needCheckCookieName) {
         try {
             if (getLoginMethodType() == HTTPMethod.GET) {
-                return new GetMethod(GenericRepositoryUtil.substituteTemplateVariables(getLoginUrl(), getAllTemplateVariables())) {
+                return new GetMethod(substituteTemplateVariables(getLoginUrl(), getAllTemplateVariables())) {
                     @Override
                     protected void processResponseBody(HttpState state, HttpConnection conn) {
                         super.processResponseBody(state, conn);
-                        checkCookie(state, conn);
+                        checkCookie(state, needCheckCookieName);
                     }
                 };
             } else {
                 int n = getLoginUrl().indexOf('?');
                 String url = n == -1 ? getLoginUrl() : getLoginUrl().substring(0, n);
-                PostMethod method = new PostMethod(GenericRepositoryUtil.substituteTemplateVariables(url, getAllTemplateVariables())) {
+                PostMethod method = new PostMethod(substituteTemplateVariables(url, getAllTemplateVariables())) {
                     @Override
                     protected void processResponseBody(HttpState state, HttpConnection conn) {
                         super.processResponseBody(state, conn);
-                        checkCookie(state, conn);
+                        checkCookie(state, needCheckCookieName);
                     }
                 };
                 String[] queryParams = getLoginUrl().substring(n + 1).split("&");
@@ -303,9 +299,9 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
                     String[] nv = s.split("=");
                     try {
                         if (nv.length == 1) {
-                            return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], getAllTemplateVariables(), false), "");
+                            return new NameValuePair(substituteTemplateVariables(nv[0], getAllTemplateVariables(), false), "");
                         }
-                        return new NameValuePair(GenericRepositoryUtil.substituteTemplateVariables(nv[0], getAllTemplateVariables(), false), GenericRepositoryUtil.substituteTemplateVariables(nv[1], getAllTemplateVariables(), false));
+                        return new NameValuePair(substituteTemplateVariables(nv[0], getAllTemplateVariables(), false), substituteTemplateVariables(nv[1], getAllTemplateVariables(), false));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -314,16 +310,11 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            needCheckCookieName.remove();
         }
     }
 
-    private void checkCookie(HttpState state, HttpConnection conn) {
-        if (getLoginSuccessCookieName() == null) {
-            return;
-        }
-        if (needCheckCookieName.get() == null || !needCheckCookieName.get()) {
+    private void checkCookie(HttpState state, boolean needCheckCookieName) {
+        if (getLoginSuccessCookieName() == null || !needCheckCookieName) {
             return;
         }
         for (Cookie cookie : state.getCookies()) {
@@ -375,8 +366,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
-                needCheckCookieName.set(false);
-                String result = executeMethod(getLoginMethod());
+                String result = executeMethod(getLoginMethod(false));
                 throw new ProcessNeedResultException(result);
             }
 

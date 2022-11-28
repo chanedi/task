@@ -29,7 +29,7 @@ public class TaskCancelAction extends TaskItemAction {
     public void update(@NotNull AnActionEvent e) {
         TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(getEventProject(e));
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
-        boolean enable = isEnable(e, updateConfig.getCancelUrl());
+        boolean enable = updateConfig == null ? false : isEnable(e, updateConfig.getCancelUrl());
         e.getPresentation().setEnabled(enable);
     }
 }

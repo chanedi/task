@@ -109,9 +109,12 @@
               <toolTipText value="非SuperGenericRepository仅支持变量：id、summary、description"/>
             </properties>
           </component>
-          <component id="8191b" class="javax.swing.JComboBox" binding="completeMethodCombo">
+          <component id="8191b" class="javax.swing.JComboBox" binding="myCompleteMethodCombo">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="80" height="-1"/>
+                <maximum-size width="80" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <model>
@@ -148,9 +151,12 @@
               <toolTipText value="非SuperGenericRepository仅支持变量：id、summary、description"/>
             </properties>
           </component>
-          <component id="2ebbd" class="javax.swing.JComboBox" binding="cancelMethodCombo">
+          <component id="2ebbd" class="javax.swing.JComboBox" binding="myCancelMethodCombo">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="80" height="-1"/>
+                <maximum-size width="80" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <model>
@@ -161,7 +167,7 @@
           </component>
         </children>
       </grid>
-      <component id="47d82" class="javax.swing.JButton" binding="manageTemplateVariablesButton">
+      <component id="47d82" class="javax.swing.JButton" binding="myManageTemplateVariablesButton">
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="-1"/>

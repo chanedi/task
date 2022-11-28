@@ -28,17 +28,15 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
     private EditorTextField myDetailUrlField;
     private EditorTextField myCompleteUrlField;
     private EditorTextField myCancelUrlField;
-    private JComboBox completeMethodCombo;
-    private JComboBox cancelMethodCombo;
-    private JButton manageTemplateVariablesButton;
+    private JComboBox myCompleteMethodCombo;
+    private JComboBox myCancelMethodCombo;
+    private JButton myManageTemplateVariablesButton;
 
     public TaskUpdateConfigurable(Project project) {
         super();
         this.myProject = project;
 
-
-
-//        manageTemplateVariablesButton.addActionListener(new ActionListener() {
+//        myManageTemplateVariablesButton.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(final ActionEvent e) {
 //                final ManageTemplateVariablesDialog dialog = new ManageTemplateVariablesDialog(manageTemplateVariablesButton, false);
@@ -101,8 +99,8 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         updateConfig.setDetailUrl(HttpUtils.addSchemeIfNoneSpecified(settings.getSelectedTaskRepository(), myDetailUrlField.getText()));
         updateConfig.setCompleteUrl(HttpUtils.addSchemeIfNoneSpecified(settings.getSelectedTaskRepository(), myCompleteUrlField.getText()));
         updateConfig.setCancelUrl(HttpUtils.addSchemeIfNoneSpecified(settings.getSelectedTaskRepository(), myCancelUrlField.getText()));
-        updateConfig.setCompleteMethod(HTTPMethod.valueOf((String) completeMethodCombo.getSelectedItem()));
-        updateConfig.setCancelMethod(HTTPMethod.valueOf((String) cancelMethodCombo.getSelectedItem()));
+        updateConfig.setCompleteMethod(HTTPMethod.valueOf((String) myCompleteMethodCombo.getSelectedItem()));
+        updateConfig.setCancelMethod(HTTPMethod.valueOf((String) myCancelMethodCombo.getSelectedItem()));
         settings.updateConfig(updateConfig);
     }
 
@@ -116,8 +114,8 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         myDetailUrlField.setText(updateConfig.getDetailUrl());
         myCompleteUrlField.setText(updateConfig.getCompleteUrl());
         myCancelUrlField.setText(updateConfig.getCancelUrl());
-        completeMethodCombo.setSelectedItem(updateConfig.getCompleteMethod());
-        cancelMethodCombo.setSelectedItem(updateConfig.getCancelMethod());
+        myCompleteMethodCombo.setSelectedItem(updateConfig.getCompleteMethod().toString());
+        myCancelMethodCombo.setSelectedItem(updateConfig.getCancelMethod().toString());
 
 //        private JButton completeManageTemplateVariablesButton;
 //        private JButton cancelManageTemplateVariablesButton;
