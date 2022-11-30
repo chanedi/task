@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.lufax"
-version = "1.0-SNAPSHOT"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -13,6 +13,7 @@ repositories {
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     version.set("2021.2")
+//    version.set("2020.3")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("com.intellij.tasks", "Git4Idea"))
