@@ -12,6 +12,11 @@ public class TaskCompleteAction extends TaskItemAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
+        int confirm_cancel = Messages.showOkCancelDialog(getEventProject(e), "Are you sure you want to complete task?", "Confirm Complete", Messages.getQuestionIcon());
+        if (confirm_cancel != Messages.OK) {
+            return;
+        }
+
         TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(getEventProject(e));
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
         TaskRepository taskRepository = configsState.getSelectedTaskRepository();

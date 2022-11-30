@@ -131,8 +131,7 @@ public class HttpUtils {
             method = new GetMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
         } else {
             int n = requestUrl.indexOf('?');
-            String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
-            method = new PostMethod(substituteTemplateVariables(url, requestTemplateVariables));
+            method = new PostMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
             if (n >= 0) {
                 String[] queryParams = requestUrl.substring(n + 1).split("&");
                 ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
@@ -173,7 +172,7 @@ public class HttpUtils {
                 }
             }
         }
-        LOG.info(responseBody);
+        LOG.info("Response body:" + responseBody);
         if (method.getStatusCode() != HttpStatus.SC_OK) {
             String message = "Request failed with HTTP error: " + method.getStatusText();
             if (StringUtil.isNotEmpty(responseBody)) {

@@ -10,6 +10,7 @@ import com.intellij.util.ui.ListTableModel;
 import com.lufax.task.repository.SuperGenericTask;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TaskListTableModel extends ListTableModel<Task> {
@@ -103,6 +104,9 @@ public class TaskListTableModel extends ListTableModel<Task> {
 
     public void updateTaskRepository(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
+        if (taskRepository == null) {
+            setItems(new ArrayList<>());
+        }
         try {
             setItems(Arrays.asList(taskRepository.getIssues("", 0, 10, false)));
         } catch (Exception e) {

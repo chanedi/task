@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsTaskHandler;
 import com.intellij.tasks.BranchInfo;
+import com.intellij.tasks.LocalTask;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.generic.TemplateVariable;
@@ -52,34 +53,37 @@ public abstract class TaskItemAction extends AnAction {
         templateVariables.add(new TemplateVariable(DESCRIPTION, selectedTask.getDescription() == null ? "" : selectedTask.getDescription()));
         templateVariables.add(new TemplateVariable(SuperGenericRepository.SERVER_URL, configsState.getSelectedTaskRepository().getUrl()));
         if (taskManager.isVcsEnabled()) {
-            List<BranchInfo> branches = taskManager.findTask(selectedTask.getId()).getBranches(false);
-            if (branches.size() > 0) {
-                BranchInfo branchInfo = branches.get(0);
-                templateVariables.add(new TemplateVariable(BRANCH, branchInfo.name));
+            LocalTask task = taskManager.findTask(selectedTask.getId());
+            if (task != null) {
+                List<BranchInfo> branches = task.getBranches(false);
+                if (branches.size() > 0) {
+                    BranchInfo branchInfo = branches.get(0);
+                    templateVariables.add(new TemplateVariable(BRANCH, branchInfo.name));
 
-                DvcsTaskHandler dvcsTaskHandler = null;
-                VcsTaskHandler[] allHandlers = VcsTaskHandler.getAllHandlers(getEventProject(e));
-                for (VcsTaskHandler handler : allHandlers) {
-                    if (!(handler instanceof DvcsTaskHandler)) {
-                        continue;
+                    DvcsTaskHandler dvcsTaskHandler = null;
+                    VcsTaskHandler[] allHandlers = VcsTaskHandler.getAllHandlers(getEventProject(e));
+                    for (VcsTaskHandler handler : allHandlers) {
+                        if (!(handler instanceof DvcsTaskHandler)) {
+                            continue;
+                        }
+                        dvcsTaskHandler = (DvcsTaskHandler) handler;
+                        break;
                     }
-                    dvcsTaskHandler = (DvcsTaskHandler) handler;
-                    break;
-                }
 
-                if (dvcsTaskHandler != null) {
-                    List<String> repositoryUrls = new ArrayList<>();
-                    repositoryUrls.add(branchInfo.repository);
-                    List<? extends Repository> repositories;
-                    try {
-                        Method reflectMethod = DvcsTaskHandler.class.getDeclaredMethod("getRepositories", Collection.class);
-                        reflectMethod.setAccessible(true);
-                        repositories = (List<? extends Repository>) reflectMethod.invoke(dvcsTaskHandler, repositoryUrls);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    if (repositories.size() > 0) {
-                        templateVariables.add(new TemplateVariable(REVISION, repositories.get(0).getCurrentRevision()));
+                    if (dvcsTaskHandler != null) {
+                        List<String> repositoryUrls = new ArrayList<>();
+                        repositoryUrls.add(branchInfo.repository);
+                        List<? extends Repository> repositories;
+                        try {
+                            Method reflectMethod = DvcsTaskHandler.class.getDeclaredMethod("getRepositories", Collection.class);
+                            reflectMethod.setAccessible(true);
+                            repositories = (List<? extends Repository>) reflectMethod.invoke(dvcsTaskHandler, repositoryUrls);
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        if (repositories.size() > 0) {
+                            templateVariables.add(new TemplateVariable(REVISION, repositories.get(0).getCurrentRevision()));
+                        }
                     }
                 }
             }
