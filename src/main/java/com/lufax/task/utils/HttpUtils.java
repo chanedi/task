@@ -1,6 +1,5 @@
 package com.lufax.task.utils;
 
-import com.google.gson.JsonObject;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.util.text.StringUtil;
@@ -17,20 +16,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.http.HeaderIterator;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.cookie.CookieOrigin;
-import org.apache.http.cookie.CookieSpec;
-import org.apache.http.cookie.SM;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.cookie.DefaultCookieSpec;
 import org.apache.http.message.BasicNameValuePair;
 import org.jetbrains.annotations.Nullable;
 
@@ -194,6 +186,11 @@ public class HttpUtils {
     }
 
     public static <T> T executeRequest(org.apache.http.client.HttpClient httpClient, String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables, ResponseHandler<? extends T> responseHandler) throws Exception {
+        HttpUriRequest uriRequest = getRequest(requestUrl, requestType, requestTemplateVariables);
+        return httpClient.execute(uriRequest, responseHandler);
+    }
+
+    public static HttpUriRequest getRequest(String requestUrl, HTTPMethod requestType, List<TemplateVariable> requestTemplateVariables) throws Exception {
         HttpUriRequest uriRequest;
         if (requestType == HTTPMethod.GET) {
             uriRequest = new HttpGet(new URIBuilder(substituteTemplateVariables(requestUrl, requestTemplateVariables)).build());
@@ -218,7 +215,7 @@ public class HttpUtils {
                 ((HttpPost) uriRequest).setEntity(new UrlEncodedFormEntity(parameters));
             }
         }
-        return httpClient.execute(uriRequest, responseHandler);
+        return uriRequest;
     }
 
     private static String getDefaultScheme(BaseRepository taskRepository) {

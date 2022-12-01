@@ -28,18 +28,19 @@ import com.lufax.task.NeedDynamicTokenException;
 import com.lufax.task.ProcessNeedResultException;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.StringUtils;
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.HttpState;
+import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.DateUtils;
 import org.apache.http.conn.util.PublicSuffixMatcher;
 import org.apache.http.conn.util.PublicSuffixMatcherLoader;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.cookie.CookieSpecProvider;
 import org.apache.http.impl.client.CookieSpecRegistries;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -72,6 +73,8 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     @NonNls public static final String SERVER_URL = "serverUrl";
     @NonNls public static final String USERNAME = "username";
     @NonNls public static final String PASSWORD = "password";
+
+    private static final String needCheckCookieNameHeader = "_needCheckResponseCookieNameFromIdea_";
 
     private final FactoryVariable myServerTemplateVariable = new FactoryVariable(SERVER_URL) {
         @NotNull
@@ -165,20 +168,22 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
 
     @NotNull
     protected HttpClient getHttpClient() {
-        PublicSuffixMatcher publicSuffixMatcher = PublicSuffixMatcherLoader.getDefault();
-        String[] datepatterns = new String[] {
-                DateUtils.PATTERN_RFC1123,
-                DateUtils.PATTERN_RFC1036,
-                DateUtils.PATTERN_ASCTIME
-        };
-        CookieSpecProvider cookieSpecProvider = new DefaultCookieSpecProvider(null, publicSuffixMatcher, datepatterns, false);
-        HttpClientBuilder builder = HttpClients.custom()
-                .setDefaultRequestConfig(createRequestConfig())
-                .setSSLContext(CertificateManager.getInstance().getSslContext())
-                .setDefaultCookieSpecRegistry(CookieSpecRegistries.createDefaultBuilder(publicSuffixMatcher).register(CookieSpecs.DEFAULT, cookieSpecProvider).build())
-                .addInterceptorLast(createResponseInterceptor())
-                .addInterceptorLast(createRequestInterceptor());
-        httpClient = builder.build();
+        if (httpClient == null) {
+            PublicSuffixMatcher publicSuffixMatcher = PublicSuffixMatcherLoader.getDefault();
+            String[] datepatterns = new String[] {
+                    DateUtils.PATTERN_RFC1123,
+                    DateUtils.PATTERN_RFC1036,
+                    DateUtils.PATTERN_ASCTIME
+            };
+            CookieSpecProvider cookieSpecProvider = new DefaultCookieSpecProvider(null, publicSuffixMatcher, datepatterns, false);
+            HttpClientBuilder builder = HttpClients.custom()
+                    .setDefaultRequestConfig(createRequestConfig())
+                    .setSSLContext(CertificateManager.getInstance().getSslContext())
+                    .setDefaultCookieSpecRegistry(CookieSpecRegistries.createDefaultBuilder(publicSuffixMatcher).register(CookieSpecs.DEFAULT, cookieSpecProvider).build())
+                    .addInterceptorLast(createResponseInterceptor())
+                    .addInterceptorLast(createRequestInterceptor());
+            httpClient = builder.build();
+        }
         return httpClient;
     }
 
@@ -255,12 +260,19 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
             throw new Exception("'Task list URL' configuration parameter is mandatory");
         }
         if (!isLoginAnonymously() && !isUseHttpAuthentication()) {
-            HttpUtils.executeRequest(getHttpClient(), getLoginUrl(true), myLoginMethodType, getAllTemplateVariables());
+            try {
+                HttpUriRequest request = HttpUtils.getRequest(getLoginUrl(true), getLoginMethodType(), getAllTemplateVariables());
+                request.setHeader(needCheckCookieNameHeader, "true");
+                getHttpClient().execute(request);
+            } catch (NeedDynamicTokenException e) {
+                List<TemplateVariable> variables = getLoginWithTokenTemplateVariables();
+                HttpUtils.executeRequest(getHttpClient(), getLoginWithTokenUrl(), getLoginWithTokenMethodType(), variables);
+            }
         }
         List<TemplateVariable> variables = concat(getAllTemplateVariables(),
                 new TemplateVariable("offset", String.valueOf(offset)),
                 new TemplateVariable("limit", String.valueOf(limit)));
-        String responseBody = HttpUtils.executeRequest(getHttpClient(), getTasksListUrl(), myTasksListMethodType, variables);
+        String responseBody = HttpUtils.executeRequest(getHttpClient(), getTasksListUrl(), getTasksListMethodType(), variables);
         Task[] tasks = getActiveResponseHandler().parseIssues(responseBody, limit);
         if (myResponseType == ResponseType.TEXT) {
             return tasks;
@@ -277,7 +289,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
     @Override
     public Task findTask(@NotNull final String id) throws Exception {
         List<TemplateVariable> variables = concat(getAllTemplateVariables(), new TemplateVariable("id", id));
-        return getActiveResponseHandler().parseIssue(HttpUtils.executeRequest(getHttpClient(), getSingleTaskUrl(), mySingleTaskMethodType, variables));
+        return getActiveResponseHandler().parseIssue(HttpUtils.executeRequest(getHttpClient(), getSingleTaskUrl(), getSingleTaskMethodType(), variables));
     }
 
     @Nullable
@@ -299,7 +311,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
-                String result = HttpUtils.executeRequest(getHttpClient(), getLoginUrl(), myLoginMethodType, getAllTemplateVariables());
+                String result = HttpUtils.executeRequest(getHttpClient(), getLoginUrl(), getLoginMethodType(), getAllTemplateVariables());
                 throw new ProcessNeedResultException(result);
             }
 
@@ -317,7 +329,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         @Nullable CancellableConnection myConnection = new CancellableConnection() {
             @Override
             protected void doTest() throws Exception {
-                String result = HttpUtils.executeRequest(getHttpClient(), getLoginWithTokenUrl(), myLoginWithTokenMethodType, variables);
+                String result = HttpUtils.executeRequest(getHttpClient(), getLoginWithTokenUrl(), getLoginWithTokenMethodType(), variables);
                 throw new ProcessNeedResultException(result);
             }
 
@@ -337,7 +349,7 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
                 List<TemplateVariable> variables = concat(getAllTemplateVariables(),
                         new TemplateVariable("offset", String.valueOf(0)),
                         new TemplateVariable("limit", String.valueOf(1)));
-                String result = HttpUtils.executeRequest(getHttpClient(), getTasksListUrl(), myTasksListMethodType, variables);
+                String result = HttpUtils.executeRequest(getHttpClient(), getTasksListUrl(), getTasksListMethodType(), variables);
                 throw new ProcessNeedResultException(result);
             }
 
@@ -618,23 +630,27 @@ public class SuperGenericRepository extends NewBaseRepositoryImpl {
         return variables;
     }
 
-    private void checkCookie(HttpState state, boolean needCheckCookieName) {
-
-        for (Cookie cookie : state.getCookies()) {
-            if (cookie.getName().equals(getLoginSuccessCookieName())) {
-                return;
-            }
-        }
-        throw new NeedDynamicTokenException();
-    }
-
     private HttpResponseInterceptor createResponseInterceptor() {
         return new HttpResponseInterceptor() {
 
             @Override
             public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+                if (StringUtil.isEmpty(getLoginSuccessCookieName())) {
+                    return;
+                }
                 HttpClientContext clientContext = HttpClientContext.adapt(context);
+                Header header = clientContext.getRequest().getFirstHeader(needCheckCookieNameHeader);
+                if (header == null) {
+                    return;
+                }
+
                 CookieStore cookieStore = clientContext.getCookieStore();
+                for (Cookie cookie : cookieStore.getCookies()) {
+                    if (cookie.getName().equals(getLoginSuccessCookieName())) {
+                        return;
+                    }
+                }
+                throw new NeedDynamicTokenException();
             }
         };
     }
