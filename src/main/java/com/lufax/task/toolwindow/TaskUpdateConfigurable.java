@@ -31,6 +31,9 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
     private JPanel myCompletePannel;
     private JPanel myCancelPannel;
 
+    private StatusUrlMappingTable completeTable;
+    private StatusUrlMappingTable cancelTable;
+
     public TaskUpdateConfigurable(Project project) {
         super();
         this.myProject = project;
@@ -39,8 +42,10 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         TaskUpdateConfig updateConfig = taskUpdateConfigsState.getUpdateConfig();
 //        myCompleteUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCompleteUrl(StatusActionUrlMapping.DEFAULT_STATUS).getUrl(), placeholders);
 //        myCancelUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCancelUrl(StatusActionUrlMapping.DEFAULT_STATUS).getUrl(), placeholders);
-        myCompletePannel.add(new StatusUrlMappingTable(taskUpdateConfigsState.getSelectedTaskRepository(), updateConfig.getCompleteUrls()).getComponent(), BorderLayout.CENTER);
-        myCancelPannel.add(new StatusUrlMappingTable(taskUpdateConfigsState.getSelectedTaskRepository(), updateConfig.getCancelUrls()).getComponent(), BorderLayout.CENTER);
+        completeTable = new StatusUrlMappingTable(taskUpdateConfigsState.getSelectedTaskRepository(), updateConfig.getCompleteUrls());
+        myCompletePannel.add(completeTable.getComponent(), BorderLayout.CENTER);
+        cancelTable = new StatusUrlMappingTable(taskUpdateConfigsState.getSelectedTaskRepository(), updateConfig.getCancelUrls());
+        myCancelPannel.add(cancelTable.getComponent(), BorderLayout.CENTER);
 
 //        myManageTemplateVariablesButton.addActionListener(new ActionListener() {
 //            @Override
@@ -101,6 +106,8 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         updateConfig.setName(myNameField.getText());
         updateConfig.setDetailUrl(HttpUtils.addSchemeIfNoneSpecified(settings.getSelectedTaskRepository(), myDetailUrlField.getText()));
         settings.updateConfig(updateConfig);
+        updateConfig.setCompleteUrls(completeTable.getValues());
+        updateConfig.setCancelUrls(cancelTable.getValues());
     }
 
     @Override
@@ -111,6 +118,8 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         myNameField.setText(updateConfig.getName());
         myLoginUrlField.setText(settings.getSelectedTaskRepository().getUrl());
         myDetailUrlField.setText(updateConfig.getDetailUrl());
+        completeTable.setValues(updateConfig.getCompleteUrls());
+        cancelTable.setValues(updateConfig.getCancelUrls());
     }
 
 }

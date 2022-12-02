@@ -48,11 +48,14 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
 
     public void setValues(Map<String, ActionUrl> map) {
         List<StatusActionUrlMapping> list = new ArrayList<>(map.size());
+        StatusActionUrlMapping defaultUrl = new StatusActionUrlMapping(StatusActionUrlMapping.DEFAULT_STATUS, map.get(StatusActionUrlMapping.DEFAULT_STATUS).getUrl(), map.get(StatusActionUrlMapping.DEFAULT_STATUS).getMethod());
+        defaultUrl.setDefault(true);
+        list.add(defaultUrl);
         for (Map.Entry<String, ActionUrl> entry : map.entrySet()) {
-            StatusActionUrlMapping e = new StatusActionUrlMapping(entry.getKey(), entry.getValue().getUrl(), entry.getValue().getMethod());
-            if (e.getStatus().equals(StatusActionUrlMapping.DEFAULT_STATUS)) {
-                e.setDefault(true);
+            if (entry.getKey().equals(StatusActionUrlMapping.DEFAULT_STATUS)) {
+                continue;
             }
+            StatusActionUrlMapping e = new StatusActionUrlMapping(entry.getKey(), entry.getValue().getUrl(), entry.getValue().getMethod());
             list.add(e);
         }
         super.setValues(list);
@@ -85,6 +88,11 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
             @Override
             public void setValue(StatusActionUrlMapping statusActionUrlMapping, @NlsContexts.ListItem String value) {
                 statusActionUrlMapping.setStatus(value);
+            }
+
+            @Override
+            public @NlsContexts.Tooltip @Nullable String getTooltipText() {
+                return "Status can't be the same";
             }
         };
         ColumnInfo url = new ElementsColumnInfoBase<StatusActionUrlMapping>("Url") {
