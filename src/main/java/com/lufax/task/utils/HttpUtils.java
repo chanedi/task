@@ -165,7 +165,7 @@ public class HttpUtils {
         }
         LOG.info("Response body:" + responseBody);
         if (method.getStatusCode() != HttpStatus.SC_OK) {
-            String message = "Request failed with HTTP error: " + method.getStatusText();
+            String message = "Request failed with HTTP error: [" + method.getStatusCode() + "]" + method.getStatusText();
             if (StringUtil.isNotEmpty(responseBody)) {
                 message = message + ". Response body:" + responseBody;
             }

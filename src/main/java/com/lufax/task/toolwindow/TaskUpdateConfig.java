@@ -1,32 +1,24 @@
 package com.lufax.task.toolwindow;
 
 import com.intellij.tasks.TaskRepository;
-import com.intellij.tasks.generic.TemplateVariable;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.net.HTTPMethod;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class TaskUpdateConfig {
 
     private String name;
     private String detailUrl;
-    private String completeUrl;
-    private HTTPMethod completeMethod;
-    private List<TemplateVariable> templateVariables = new ArrayList<>();
-    private String cancelUrl;
-    private HTTPMethod cancelMethod;
+    private Map<String, ActionUrl> completeUrls = new HashMap();
+
+    private Map<String, ActionUrl> cancelUrls = new HashMap();
 
     public TaskUpdateConfig() {
     }
 
     public TaskUpdateConfig(TaskRepository taskRepository) {
         this.name = taskRepository.getPresentableName();
-        this.completeMethod = HTTPMethod.GET;
-        this.cancelMethod = HTTPMethod.GET;
+        completeUrls.put(StatusActionUrlMapping.DEFAULT_STATUS, new ActionUrl());
+        cancelUrls.put(StatusActionUrlMapping.DEFAULT_STATUS, new ActionUrl());
     }
 
     public String getName() {
@@ -45,48 +37,35 @@ public class TaskUpdateConfig {
         this.detailUrl = detailUrl;
     }
 
-    public String getCompleteUrl() {
-        return completeUrl;
+    public Map<String, ActionUrl> getCompleteUrls() {
+        return completeUrls;
     }
 
-    public void setCompleteUrl(String completeUrl) {
-        this.completeUrl = completeUrl;
+    public void setCompleteUrls(Map<String, ActionUrl> completeUrls) {
+        this.completeUrls = completeUrls;
     }
 
-    public HTTPMethod getCompleteMethod() {
-        return completeMethod;
+    public Map<String, ActionUrl> getCancelUrls() {
+        return cancelUrls;
     }
 
-    public void setCompleteMethod(HTTPMethod completeMethod) {
-        this.completeMethod = completeMethod;
+    public void setCancelUrls(Map<String, ActionUrl> cancelUrls) {
+        this.cancelUrls = cancelUrls;
     }
 
-    public List<TemplateVariable> getTemplateVariables() {
-        return templateVariables;
+    public ActionUrl getCompleteUrl(String status) {
+        ActionUrl actionUrl = completeUrls.get(status);
+        if (actionUrl != null) {
+            return actionUrl;
+        }
+        return completeUrls.get(StatusActionUrlMapping.DEFAULT_STATUS);
     }
 
-    public List<TemplateVariable> getAllTemplateVariables() {
-        return getTemplateVariables();
+    public ActionUrl getCancelUrl(String status) {
+        ActionUrl actionUrl = cancelUrls.get(status);
+        if (actionUrl != null) {
+            return actionUrl;
+        }
+        return cancelUrls.get(StatusActionUrlMapping.DEFAULT_STATUS);
     }
-
-    public void setTemplateVariables(List<TemplateVariable> templateVariables) {
-        this.templateVariables = templateVariables;
-    }
-
-    public String getCancelUrl() {
-        return cancelUrl;
-    }
-
-    public void setCancelUrl(String cancelUrl) {
-        this.cancelUrl = cancelUrl;
-    }
-
-    public HTTPMethod getCancelMethod() {
-        return cancelMethod;
-    }
-
-    public void setCancelMethod(HTTPMethod cancelMethod) {
-        this.cancelMethod = cancelMethod;
-    }
-
 }

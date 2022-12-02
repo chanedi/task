@@ -6,6 +6,7 @@ import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsTaskHandler;
 import com.intellij.tasks.BranchInfo;
@@ -42,12 +43,10 @@ public abstract class TaskItemAction extends AnAction {
     public static final String BRANCH = "branchName";
     public static final String REVISION = "currentRevision";
 
-    protected List<TemplateVariable> getTemplateVariables(AnActionEvent e) {
-        Task selectedTask = getSelectedTask(e);
-        TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(getEventProject(e));
-        TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
-        TaskManager taskManager = TaskManager.getManager(getEventProject(e));
-        List<TemplateVariable> templateVariables = new ArrayList<>(updateConfig.getTemplateVariables());
+    protected List<TemplateVariable> getTemplateVariables(Task selectedTask, Project project) {
+        TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(project);
+        TaskManager taskManager = TaskManager.getManager(project);
+        List<TemplateVariable> templateVariables = new ArrayList<>();
         templateVariables.add(new TemplateVariable(ID, selectedTask.getId()));
         templateVariables.add(new TemplateVariable(SUMMARY, selectedTask.getSummary()));
         templateVariables.add(new TemplateVariable(DESCRIPTION, selectedTask.getDescription() == null ? "" : selectedTask.getDescription()));
@@ -61,7 +60,7 @@ public abstract class TaskItemAction extends AnAction {
                     templateVariables.add(new TemplateVariable(BRANCH, branchInfo.name));
 
                     DvcsTaskHandler dvcsTaskHandler = null;
-                    VcsTaskHandler[] allHandlers = VcsTaskHandler.getAllHandlers(getEventProject(e));
+                    VcsTaskHandler[] allHandlers = VcsTaskHandler.getAllHandlers(project);
                     for (VcsTaskHandler handler : allHandlers) {
                         if (!(handler instanceof DvcsTaskHandler)) {
                             continue;
@@ -107,6 +106,13 @@ public abstract class TaskItemAction extends AnAction {
         TaskListTableModel tableModel = (TaskListTableModel) table.getModel();
         Task selectedTask = tableModel.getItem(table.getSelectedRow());
         return selectedTask;
+    }
+
+    protected String getStatus(Task task) {
+        if (task instanceof SuperGenericTask) {
+            return ((SuperGenericTask) task).getStatus() == null ? "" : ((SuperGenericTask) task).getStatus();
+        }
+        return task.getState() == null ? "" : task.getState().name();
     }
 
     protected void refreshTable(AnActionEvent e) {

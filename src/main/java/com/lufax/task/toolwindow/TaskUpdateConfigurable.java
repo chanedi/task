@@ -4,8 +4,8 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;
-import com.intellij.ui.EditorTextField;
-import com.intellij.util.net.HTTPMethod;
+import com.intellij.ui.*;
+import com.intellij.ui.components.JBList;
 import com.lufax.task.toolwindow.actions.TaskItemAction;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.SwingUtils;
@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.intellij.tasks.generic.GenericRepositoryUtil.*;
@@ -26,15 +28,19 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
     private JTextField myNameField;
     private JTextField myLoginUrlField;
     private EditorTextField myDetailUrlField;
-    private EditorTextField myCompleteUrlField;
-    private EditorTextField myCancelUrlField;
-    private JComboBox myCompleteMethodCombo;
-    private JComboBox myCancelMethodCombo;
-    private JButton myManageTemplateVariablesButton;
+    private JPanel myCompletePannel;
+    private JPanel myCancelPannel;
 
     public TaskUpdateConfigurable(Project project) {
         super();
         this.myProject = project;
+
+        TaskUpdateConfigsState taskUpdateConfigsState = TaskUpdateConfigsState.getInstance(myProject);
+        TaskUpdateConfig updateConfig = taskUpdateConfigsState.getUpdateConfig();
+//        myCompleteUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCompleteUrl(StatusActionUrlMapping.DEFAULT_STATUS).getUrl(), placeholders);
+//        myCancelUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCancelUrl(StatusActionUrlMapping.DEFAULT_STATUS).getUrl(), placeholders);
+        myCompletePannel.add(new StatusUrlMappingTable(taskUpdateConfigsState.getSelectedTaskRepository(), updateConfig.getCompleteUrls()).getComponent(), BorderLayout.CENTER);
+        myCancelPannel.add(new StatusUrlMappingTable(taskUpdateConfigsState.getSelectedTaskRepository(), updateConfig.getCancelUrls()).getComponent(), BorderLayout.CENTER);
 
 //        myManageTemplateVariablesButton.addActionListener(new ActionListener() {
 //            @Override
@@ -63,11 +69,8 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
     private void createUIComponents() {
         TaskUpdateConfigsState taskUpdateConfigsState = TaskUpdateConfigsState.getInstance(myProject);
         TaskUpdateConfig updateConfig = taskUpdateConfigsState.getUpdateConfig();
-        List<String> placeholders = createPlaceholdersList(updateConfig.getAllTemplateVariables());
-        placeholders = concat(placeholders, ID, SUMMARY, STATUS, RELEASE_DATE, TAG, DESCRIPTION, TaskItemAction.BRANCH, TaskItemAction.REVISION, CUSTOM_FIELD_1, CUSTOM_FIELD_2, CUSTOM_FIELD_3, CUSTOM_FIELD_4, CUSTOM_FIELD_5);
+        List<String> placeholders = concat(new ArrayList<>(), ID, SUMMARY, STATUS, RELEASE_DATE, TAG, DESCRIPTION, TaskItemAction.BRANCH, TaskItemAction.REVISION, CUSTOM_FIELD_1, CUSTOM_FIELD_2, CUSTOM_FIELD_3, CUSTOM_FIELD_4, CUSTOM_FIELD_5);
         myDetailUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getDetailUrl(), placeholders);
-        myCompleteUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCompleteUrl(), placeholders);
-        myCancelUrlField = SwingUtils.createTextFieldWithCompletion(myProject, updateConfig.getCancelUrl(), placeholders);
     }
 
     @Override
@@ -97,10 +100,6 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         TaskUpdateConfig updateConfig = new TaskUpdateConfig();
         updateConfig.setName(myNameField.getText());
         updateConfig.setDetailUrl(HttpUtils.addSchemeIfNoneSpecified(settings.getSelectedTaskRepository(), myDetailUrlField.getText()));
-        updateConfig.setCompleteUrl(HttpUtils.addSchemeIfNoneSpecified(settings.getSelectedTaskRepository(), myCompleteUrlField.getText()));
-        updateConfig.setCancelUrl(HttpUtils.addSchemeIfNoneSpecified(settings.getSelectedTaskRepository(), myCancelUrlField.getText()));
-        updateConfig.setCompleteMethod(HTTPMethod.valueOf((String) myCompleteMethodCombo.getSelectedItem()));
-        updateConfig.setCancelMethod(HTTPMethod.valueOf((String) myCancelMethodCombo.getSelectedItem()));
         settings.updateConfig(updateConfig);
     }
 
@@ -112,13 +111,6 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
         myNameField.setText(updateConfig.getName());
         myLoginUrlField.setText(settings.getSelectedTaskRepository().getUrl());
         myDetailUrlField.setText(updateConfig.getDetailUrl());
-        myCompleteUrlField.setText(updateConfig.getCompleteUrl());
-        myCancelUrlField.setText(updateConfig.getCancelUrl());
-        myCompleteMethodCombo.setSelectedItem(updateConfig.getCompleteMethod().toString());
-        myCancelMethodCombo.setSelectedItem(updateConfig.getCancelMethod().toString());
-
-//        private JButton completeManageTemplateVariablesButton;
-//        private JButton cancelManageTemplateVariablesButton;
     }
 
 }

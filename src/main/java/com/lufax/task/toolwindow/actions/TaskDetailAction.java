@@ -16,7 +16,7 @@ public class TaskDetailAction extends TaskItemAction {
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
         String detailUrl = null;
         try {
-            detailUrl = GenericRepositoryUtil.substituteTemplateVariables(updateConfig.getDetailUrl(), getTemplateVariables(e));
+            detailUrl = GenericRepositoryUtil.substituteTemplateVariables(updateConfig.getDetailUrl(), getTemplateVariables(getSelectedTask(e), getEventProject(e)));
         } catch (Exception ex) {
             Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when open task");
             throw new RuntimeException(ex);
