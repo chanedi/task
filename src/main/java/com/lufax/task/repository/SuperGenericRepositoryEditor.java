@@ -168,7 +168,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
           List<String> placeholders = createPlaceholdersList(myRepository.getAllTemplateVariables());
           ((TextFieldWithAutoCompletion) myLoginURLText).setVariants(placeholders);
           ((TextFieldWithAutoCompletion) myLoginWithTokenURLText).setVariants(concat(placeholders, "{dynamicToken}"));
-          ((TextFieldWithAutoCompletion) myTasksListURLText).setVariants(concat(placeholders, "{limit}", "{offset}"));
+          ((TextFieldWithAutoCompletion) myTasksListURLText).setVariants(concat(placeholders, "{max}", "{since}"));
           ((TextFieldWithAutoCompletion) mySingleTaskURLText).setVariants(concat(placeholders, "{id}"));
           myPanel.repaint();
         }
@@ -290,7 +290,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     List<String> placeholders = createPlaceholdersList(myRepository.getAllTemplateVariables());
     myLoginURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getLoginUrl(), placeholders);
     myLoginWithTokenURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getLoginWithTokenUrl(), concat(placeholders, "{dynamicToken}"));
-    myTasksListURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getTasksListUrl(), concat(placeholders, "{limit}", "{offset}"));
+    myTasksListURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getTasksListUrl(), concat(placeholders, "{max}", "{since}"));
     mySingleTaskURLText = SwingUtils.createTextFieldWithCompletion(myProject, myRepository.getSingleTaskUrl(), concat(placeholders, "{id}"));
   }
 

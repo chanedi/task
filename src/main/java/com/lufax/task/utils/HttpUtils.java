@@ -63,7 +63,8 @@ public class HttpUtils {
                 method = new GetMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
             } else {
                 int n = requestUrl.indexOf('?');
-                method = new PostMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
+                String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
+                method = new PostMethod(substituteTemplateVariables(url, requestTemplateVariables));
                 String[] queryParams = requestUrl.substring(n + 1).split("&");
                 ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {
                     String[] nv = s.split("=");
@@ -122,7 +123,8 @@ public class HttpUtils {
             method = new GetMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
         } else {
             int n = requestUrl.indexOf('?');
-            method = new PostMethod(substituteTemplateVariables(requestUrl, requestTemplateVariables));
+            String url = n == -1 ? requestUrl : requestUrl.substring(0, n);
+            method = new PostMethod(substituteTemplateVariables(url, requestTemplateVariables));
             if (n >= 0) {
                 String[] queryParams = requestUrl.substring(n + 1).split("&");
                 ((PostMethod) method).addParameters(ContainerUtil.map2Array(queryParams, NameValuePair.class, s -> {

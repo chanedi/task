@@ -110,11 +110,11 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
 
     private List<TemplateVariable> myTemplateVariables = new ArrayList<>();
 
-    private String mySubtypeName;
-    private boolean myDownloadTasksInSeparateRequests;
+        private String mySubtypeName;
+        private boolean myDownloadTasksInSeparateRequests;
 
-    static {
-        CookiePolicy.registerCookieSpec(CookiePolicy.DEFAULT, CookieSpecBase.class);
+        static {
+            CookiePolicy.registerCookieSpec(CookiePolicy.DEFAULT, LooseRFC2109Spec.class);
     }
 
     /**
@@ -270,6 +270,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
                 }
             }
         }
+        LOG.info("responseBody:" + responseBody);
         if (method.getStatusCode() != HttpStatus.SC_OK) {
             throw new Exception("Request failed with HTTP error: [" + method.getStatusCode() + "]" + method.getStatusText());
         }
