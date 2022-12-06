@@ -130,6 +130,9 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
       return null;
     }
     TaskUpdateConfig updateConfig = updateConfigMap.get(repository);
+    if (repository instanceof SuperGenericRepository) {
+      updateConfig = ((SuperGenericRepository) repository).getUpdateConfig();
+    }
     if (updateConfig == null) {
       for (TaskRepository taskRepository : updateConfigMap.keySet()) {
         if (repository instanceof SuperGenericRepository) {
@@ -142,21 +145,24 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
         } else if (taskRepository.getClass().equals(repository.getClass()) && taskRepository.getPresentableName().equals(repository.getPresentableName())) {
           updateConfig = updateConfigMap.get(taskRepository);
         }
-
       }
-      updateConfigMap.put(repository, updateConfig);
+      updateConfig(repository, updateConfig);
     }
     if (updateConfig == null) {
       updateConfig = new TaskUpdateConfig(repository);
-      updateConfigMap.put(repository, updateConfig);
+      updateConfig(repository, updateConfig);
     }
     return updateConfig;
   }
 
   public void updateConfig(TaskUpdateConfig updateConfig) {
-    updateConfigMap.put(selectedTaskRepository, updateConfig);
-    if (selectedTaskRepository instanceof SuperGenericRepository) {
-      ((SuperGenericRepository) selectedTaskRepository).setUpdateConfig(updateConfig);
+    updateConfig(selectedTaskRepository, updateConfig);
+  }
+
+  public void updateConfig(TaskRepository taskRepository, TaskUpdateConfig updateConfig) {
+    updateConfigMap.put(taskRepository, updateConfig);
+    if (taskRepository instanceof SuperGenericRepository) {
+      ((SuperGenericRepository) taskRepository).setUpdateConfig(updateConfig);
     }
   }
 
