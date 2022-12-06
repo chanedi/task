@@ -13,12 +13,13 @@ public class TaskUpdateConfig {
     private Map<String, ActionUrl> cancelUrls = new HashMap();
 
     public TaskUpdateConfig() {
+        completeUrls.put(StatusActionUrlMapping.DEFAULT_STATUS, new ActionUrl());
+        cancelUrls.put(StatusActionUrlMapping.DEFAULT_STATUS, new ActionUrl());
     }
 
     public TaskUpdateConfig(TaskRepository taskRepository) {
+        this();
         this.name = taskRepository.getPresentableName();
-        completeUrls.put(StatusActionUrlMapping.DEFAULT_STATUS, new ActionUrl());
-        cancelUrls.put(StatusActionUrlMapping.DEFAULT_STATUS, new ActionUrl());
     }
 
     public String getName() {

@@ -155,6 +155,9 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
 
   public void updateConfig(TaskUpdateConfig updateConfig) {
     updateConfigMap.put(selectedTaskRepository, updateConfig);
+    if (selectedTaskRepository instanceof SuperGenericRepository) {
+      ((SuperGenericRepository) selectedTaskRepository).setUpdateConfig(updateConfig);
+    }
   }
 
   public static class Config {

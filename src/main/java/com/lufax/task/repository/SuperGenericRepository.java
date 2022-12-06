@@ -16,7 +16,6 @@ import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.TaskRepositorySubtype;
 import com.intellij.tasks.TaskRepositoryType;
-import com.intellij.tasks.generic.GenericRepositoryUtil;
 import com.intellij.tasks.generic.ResponseType;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.tasks.impl.BaseRepositoryImpl;
@@ -27,11 +26,12 @@ import com.intellij.util.xmlb.annotations.Tag;
 import com.intellij.util.xmlb.annotations.XCollection;
 import com.lufax.task.NeedDynamicTokenException;
 import com.lufax.task.ProcessNeedResultException;
+import com.lufax.task.toolwindow.TaskUpdateConfig;
+import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.StringUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.cookie.CookieSpecBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.jetbrains.annotations.NonNls;
@@ -98,6 +98,8 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     private String myTasksListUrl = "";
     private String mySingleTaskUrl;
     private String myLoginSuccessCookieName;
+    private TaskUpdateConfig myUpdateConfig;
+    private String myCookiePolicy;
 
     private HTTPMethod myLoginMethodType = HTTPMethod.GET;
     private HTTPMethod myLoginWithTokenMethodType = HTTPMethod.GET;
@@ -110,12 +112,8 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
 
     private List<TemplateVariable> myTemplateVariables = new ArrayList<>();
 
-        private String mySubtypeName;
-        private boolean myDownloadTasksInSeparateRequests;
-
-        static {
-            CookiePolicy.registerCookieSpec(CookiePolicy.DEFAULT, LooseRFC2109Spec.class);
-    }
+    private String mySubtypeName;
+    private boolean myDownloadTasksInSeparateRequests;
 
     /**
      * Serialization constructor
@@ -139,8 +137,10 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         myLoginURL = other.getLoginUrl();
         myLoginWithTokenURL = other.getLoginWithTokenUrl();
         myLoginSuccessCookieName = other.getLoginSuccessCookieName();
+        myCookiePolicy = other.getCookiePolicy();
         myTasksListUrl = other.getTasksListUrl();
         mySingleTaskUrl = other.getSingleTaskUrl();
+        myUpdateConfig = other.getUpdateConfig();
 
         myLoginMethodType = other.getLoginMethodType();
         myLoginWithTokenMethodType = other.getLoginWithTokenMethodType();
@@ -160,9 +160,11 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     }
 
     public void resetToDefaults() {
+        myCookiePolicy = CookiePolicy.DEFAULT;
         myLoginURL = "";
         myLoginWithTokenURL = "";
         myLoginSuccessCookieName = "";
+        myUpdateConfig = new TaskUpdateConfig();
         myTasksListUrl = "";
         mySingleTaskUrl = "";
         myDownloadTasksInSeparateRequests = false;
@@ -176,6 +178,12 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         myResponseHandlersMap.put(ResponseType.XML, getXmlResponseHandlerDefault());
         myResponseHandlersMap.put(ResponseType.JSON, getJsonResponseHandlerDefault());
         myResponseHandlersMap.put(ResponseType.TEXT, getTextResponseHandlerDefault());
+    }
+
+    @Override
+    protected void configureHttpClient(HttpClient client) {
+        super.configureHttpClient(client);
+        client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
     }
 
     @NotNull
@@ -439,6 +447,22 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
 
     public void setLoginSuccessCookieName(String loginSuccessCookieName) {
         this.myLoginSuccessCookieName = loginSuccessCookieName;
+    }
+
+    public String getCookiePolicy() {
+        return myCookiePolicy;
+    }
+
+    public void setCookiePolicy(String cookiePolicy) {
+        this.myCookiePolicy = cookiePolicy;
+    }
+
+    public TaskUpdateConfig getUpdateConfig() {
+        return myUpdateConfig;
+    }
+
+    public void setUpdateConfig(TaskUpdateConfig updateConfig) {
+        this.myUpdateConfig = updateConfig;
     }
 
     public void setTasksListUrl(final String tasksListUrl) {

@@ -11,7 +11,6 @@ import com.intellij.tasks.impl.BaseRepositoryType;
 import com.intellij.util.Consumer;
 import com.intellij.util.xmlb.XmlSerializer;
 import icons.TaskEnhanceIcons;
-import icons.TasksCoreIcons;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,6 +59,8 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
   public List<TaskRepositorySubtype> getAvailableSubtypes() {
     return Arrays.asList(
             this,
+            new WizardKanbanRepository(),
+            new WizardWorkBenchRepository(),
             new IReleaseRepository()
     );
   }
@@ -75,7 +76,7 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
 
     @Override
     public String getName() {
-      return myName + " [G]";
+      return myName + " [S]";
     }
 
     @Override
@@ -108,7 +109,19 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
   // Subtypes:
   public final class IReleaseRepository extends SuperGenericSubtype {
     public IReleaseRepository() {
-      super("IRelease", TasksCoreIcons.Asana);
+      super("IRelease", TaskEnhanceIcons.IRelease);
+    }
+  }
+
+  public final class WizardWorkBenchRepository extends SuperGenericSubtype {
+    public WizardWorkBenchRepository() {
+      super("WizardWorkBench", TaskEnhanceIcons.Wizard);
+    }
+  }
+
+  public final class WizardKanbanRepository extends SuperGenericSubtype {
+    public WizardKanbanRepository() {
+      super("WizardKanban", TaskEnhanceIcons.Wizard);
     }
   }
 

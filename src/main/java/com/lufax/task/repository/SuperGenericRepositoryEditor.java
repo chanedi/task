@@ -61,6 +61,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   private JLabel myLoginSuccessCookieNameLabel;
   private ComboBox myLoginWithTokenMethodTypeComboBox;
   private JButton myTestLoginWithTokenButton;
+  private JComboBox myCookiePolicyCombo;
 
   private Map<JTextField, TemplateVariable> myField2Variable;
   private final Map<JRadioButton, ResponseType> myRadio2ResponseType;
@@ -124,6 +125,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myLoginWithTokenMethodTypeComboBox.setSelectedItem(myRepository.getLoginWithTokenMethodType().toString()); //NON-NLS
     myTasksListMethodTypeComboBox.setSelectedItem(myRepository.getTasksListMethodType().toString()); //NON-NLS
     mySingleTaskMethodComboBox.setSelectedItem(myRepository.getSingleTaskMethodType().toString()); //NON-NLS
+    myCookiePolicyCombo.setSelectedItem(myRepository.getCookiePolicy());
 
     // set default listener updating model fields
     installListener(myLoginMethodTypeComboBox);
@@ -132,6 +134,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     installListener(mySingleTaskMethodComboBox);
     installListener(myLoginURLText);
     installListener(myLoginSuccessCookieNameText);
+    installListener(myCookiePolicyCombo);
     installListener(myLoginWithTokenURLText);
     installListener(myTasksListURLText);
     installListener(mySingleTaskURLText);
@@ -233,6 +236,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myLoginURLText.setText(clone.getLoginUrl());
     myLoginWithTokenURLText.setText(clone.getLoginWithTokenUrl());
     myLoginSuccessCookieNameText.setText(clone.getLoginSuccessCookieName());
+    myCookiePolicyCombo.setSelectedItem(clone.getCookiePolicy());
     myTasksListURLText.setText(clone.getTasksListUrl());
     mySingleTaskURLText.setText(clone.getSingleTaskUrl());
     //myTaskPatternText.setText(clone.getTaskPattern());
@@ -263,6 +267,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   public void apply() {
     myRepository.setLoginUrl(myLoginURLText.getText());
     myRepository.setLoginSuccessCookieName(myLoginSuccessCookieNameText.getText());
+    myRepository.setCookiePolicy((String) myCookiePolicyCombo.getSelectedItem());
     myRepository.setLoginWithTokenUrl(myLoginWithTokenURLText.getText());
     myRepository.setTasksListUrl(myTasksListURLText.getText());
     myRepository.setSingleTaskUrl(mySingleTaskURLText.getText());
