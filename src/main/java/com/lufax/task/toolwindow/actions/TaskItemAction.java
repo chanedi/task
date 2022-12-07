@@ -1,7 +1,6 @@
 package com.lufax.task.toolwindow.actions;
 
 import com.intellij.dvcs.branch.DvcsTaskHandler;
-import com.intellij.dvcs.repo.AbstractRepositoryManager;
 import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -14,23 +13,12 @@ import com.intellij.tasks.LocalTask;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.generic.TemplateVariable;
-import com.intellij.tasks.impl.BaseRepositoryImpl;
 import com.intellij.ui.table.JBTable;
 import com.lufax.task.repository.SuperGenericRepository;
 import com.lufax.task.repository.SuperGenericTask;
-import com.lufax.task.toolwindow.TaskUpdateConfig;
-import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.toolwindow.TaskListTableModel;
-import git4idea.history.GitFileHistory;
-import git4idea.history.GitHistoryProvider;
-import git4idea.repo.GitRepository;
-import git4idea.repo.GitRepositoryManager;
-import git4idea.status.GitChangeProvider;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.httpclient.HttpMethod;
-import org.jetbrains.annotations.NonNls;
+import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;

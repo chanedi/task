@@ -2,7 +2,8 @@ package com.lufax.task.toolwindow;
 
 import com.intellij.tasks.TaskRepository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TaskUpdateConfig {
 

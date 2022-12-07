@@ -8,7 +8,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.Task;
-import com.intellij.tasks.generic.*;
+import com.intellij.tasks.generic.Selector;
 import com.intellij.tasks.impl.TaskUtil;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.containers.ContainerUtil;

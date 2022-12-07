@@ -3,8 +3,6 @@ package com.lufax.task.toolwindow;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskRepository;
-import com.intellij.tasks.generic.GenericTask;
-import com.intellij.ui.AnActionButton;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
 import com.lufax.task.repository.SuperGenericTask;

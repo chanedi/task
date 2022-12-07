@@ -1,13 +1,16 @@
 package com.lufax.task.toolwindow.actions;
 
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.TaskRepository;
+import com.lufax.task.toolwindow.TaskToolWindowPanel;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
 import com.lufax.task.toolwindow.TaskUpdateConfigsState;
-import com.lufax.task.toolwindow.TaskToolWindowPanel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -19,7 +22,7 @@ public class TaskServerSelectAction extends ComboBoxAction {
 
     public TaskServerSelectAction(@NotNull TaskToolWindowPanel taskToolWindowPanel) {
         this.taskToolWindowPanel = taskToolWindowPanel;
-        this.myPopupTitle = "Select A Task Server";
+//        this.myPopupTitle = "Select A Task Server";
 
         project = taskToolWindowPanel.getProject();
 

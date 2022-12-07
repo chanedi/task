@@ -3,9 +3,7 @@ package com.lufax.task.toolwindow;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsContexts;
-import com.intellij.ui.*;
-import com.intellij.ui.components.JBList;
+import com.intellij.ui.EditorTextField;
 import com.lufax.task.toolwindow.actions.TaskItemAction;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.SwingUtils;
@@ -18,7 +16,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.intellij.tasks.generic.GenericRepositoryUtil.*;
+import static com.intellij.tasks.generic.GenericRepositoryUtil.concat;
 import static com.lufax.task.repository.SelectorBasedSuperResponseHandler.*;
 
 public class TaskUpdateConfigurable implements SearchableConfigurable {
@@ -84,7 +82,7 @@ public class TaskUpdateConfigurable implements SearchableConfigurable {
     }
 
     @Override
-    public @NlsContexts.ConfigurableName String getDisplayName() {
+    public String getDisplayName() {
         return "Task Server Detail Config";
     }
 

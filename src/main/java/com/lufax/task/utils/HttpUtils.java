@@ -27,8 +27,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -156,14 +154,7 @@ public class HttpUtils {
         }
         else {
             InputStream stream = method.getResponseBodyAsStream();
-            if (stream == null) {
-                responseBody = "";
-            }
-            else {
-                try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-                    responseBody = StreamUtil.readText(reader);
-                }
-            }
+            responseBody = stream == null ? "" : StreamUtil.readText(stream, StandardCharsets.UTF_8);
         }
         LOG.info("Response body:" + responseBody);
         if (method.getStatusCode() != HttpStatus.SC_OK) {

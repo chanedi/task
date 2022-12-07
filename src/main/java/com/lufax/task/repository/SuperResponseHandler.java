@@ -2,7 +2,10 @@ package com.lufax.task.repository;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.Task;
-import com.intellij.tasks.generic.*;
+import com.intellij.tasks.generic.JsonPathResponseHandler;
+import com.intellij.tasks.generic.RegExResponseHandler;
+import com.intellij.tasks.generic.ResponseType;
+import com.intellij.tasks.generic.XPathResponseHandler;
 import com.intellij.util.xmlb.annotations.Transient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

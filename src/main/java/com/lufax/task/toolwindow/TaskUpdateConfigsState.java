@@ -18,7 +18,10 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @State(name = "com.lufax.task.toolwindow.config.TaskUpdateConfigState", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
 public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpdateConfigsState.Config> {

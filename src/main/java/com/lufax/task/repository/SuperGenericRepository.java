@@ -9,7 +9,6 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.Task;
@@ -27,7 +26,6 @@ import com.intellij.util.xmlb.annotations.XCollection;
 import com.lufax.task.NeedDynamicTokenException;
 import com.lufax.task.ProcessNeedResultException;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
-import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.StringUtils;
 import org.apache.commons.httpclient.*;
@@ -41,8 +39,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -50,10 +46,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.lufax.task.utils.HttpUtils.*;
-
 import static com.intellij.tasks.generic.GenericRepositoryUtil.concat;
 import static com.intellij.tasks.generic.TemplateVariable.FactoryVariable;
+import static com.lufax.task.utils.HttpUtils.substituteTemplateVariables;
 
 /**
  * @author Evgeny.Zakrevsky
@@ -285,14 +280,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         }
         else {
             InputStream stream = method.getResponseBodyAsStream();
-            if (stream == null) {
-                responseBody = "";
-            }
-            else {
-                try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-                    responseBody = StreamUtil.readText(reader);
-                }
-            }
+            responseBody = stream == null ? "" : StreamUtil.readText(stream, StandardCharsets.UTF_8);
         }
         LOG.info("responseBody:" + responseBody);
         if (method.getStatusCode() != HttpStatus.SC_OK) {
@@ -718,7 +706,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     private abstract class TestConnectionTask extends com.intellij.openapi.progress.Task.Modal {
         protected Exception myException;
 
-        public TestConnectionTask(@Nullable Project project, @NlsContexts.DialogTitle @NotNull String title, boolean canBeCancelled) {
+        public TestConnectionTask(@Nullable Project project, @NotNull String title, boolean canBeCancelled) {
             super(project, title, canBeCancelled);
         }
     }

@@ -1,7 +1,6 @@
 package com.lufax.task.toolwindow;
 
 import com.intellij.execution.util.ListTableWithButtons;
-import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.TaskRepository;
 import com.intellij.util.net.HTTPMethod;
@@ -10,8 +9,6 @@ import com.intellij.util.ui.ComboBoxCellEditor;
 import com.intellij.util.ui.ListTableModel;
 import com.lufax.task.toolwindow.actions.TaskItemAction;
 import com.lufax.task.utils.HttpUtils;
-import com.lufax.task.utils.StringUtils;
-import com.lufax.task.utils.SwingUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -21,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.intellij.tasks.generic.GenericRepositoryUtil.concat;
 import static com.lufax.task.repository.SelectorBasedSuperResponseHandler.*;
 
 public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlMapping> {
@@ -71,12 +67,12 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
             }
 
             @Override
-            public @Nullable @NlsContexts.ListItem String valueOf(StatusActionUrlMapping statusActionUrlMapping) {
+            public @Nullable String valueOf(StatusActionUrlMapping statusActionUrlMapping) {
                 return statusActionUrlMapping.getStatus();
             }
 
             @Override
-            protected @Nullable @NlsContexts.Tooltip String getDescription(StatusActionUrlMapping element) {
+            protected @Nullable String getDescription(StatusActionUrlMapping element) {
                 return element.getStatus();
             }
 
@@ -86,24 +82,24 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
             }
 
             @Override
-            public void setValue(StatusActionUrlMapping statusActionUrlMapping, @NlsContexts.ListItem String value) {
+            public void setValue(StatusActionUrlMapping statusActionUrlMapping, String value) {
                 statusActionUrlMapping.setStatus(value);
             }
 
             @Override
-            public @NlsContexts.Tooltip @Nullable String getTooltipText() {
+            public @Nullable String getTooltipText() {
                 return "Status can't be the same";
             }
         };
         ColumnInfo url = new ElementsColumnInfoBase<StatusActionUrlMapping>("Url") {
 
             @Override
-            public @Nullable @NlsContexts.ListItem String valueOf(StatusActionUrlMapping statusActionUrlMapping) {
+            public @Nullable String valueOf(StatusActionUrlMapping statusActionUrlMapping) {
                 return statusActionUrlMapping.getUrl();
             }
 
             @Override
-            protected @Nullable @NlsContexts.Tooltip String getDescription(StatusActionUrlMapping element) {
+            protected @Nullable String getDescription(StatusActionUrlMapping element) {
                 return element.getUrl();
             }
 
@@ -113,12 +109,12 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
             }
 
             @Override
-            public void setValue(StatusActionUrlMapping statusActionUrlMapping, @NlsContexts.ListItem String value) {
+            public void setValue(StatusActionUrlMapping statusActionUrlMapping, String value) {
                 statusActionUrlMapping.setUrl(HttpUtils.addSchemeIfNoneSpecified(taskRepository, value));
             }
 
             @Override
-            public @NlsContexts.Tooltip @Nullable String getTooltipText() {
+            public @Nullable String getTooltipText() {
                 return "You can use template variables: " + StringUtil.join(new String[]{ID, SUMMARY, STATUS, RELEASE_DATE, TAG, DESCRIPTION, TaskItemAction.BRANCH, TaskItemAction.REVISION, CUSTOM_FIELD_1, CUSTOM_FIELD_2, CUSTOM_FIELD_3, CUSTOM_FIELD_4, CUSTOM_FIELD_5}, ",");
             }
         };
@@ -130,12 +126,12 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
             }
 
             @Override
-            public @Nullable @NlsContexts.ListItem String valueOf(StatusActionUrlMapping statusActionUrlMapping) {
+            public @Nullable String valueOf(StatusActionUrlMapping statusActionUrlMapping) {
                 return statusActionUrlMapping.getMethod().name();
             }
 
             @Override
-            protected @Nullable @NlsContexts.Tooltip String getDescription(StatusActionUrlMapping element) {
+            protected @Nullable String getDescription(StatusActionUrlMapping element) {
                 return element.getMethod().name();
             }
 
@@ -145,7 +141,7 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
             }
 
             @Override
-            public void setValue(StatusActionUrlMapping statusActionUrlMapping, @NlsContexts.ListItem String value) {
+            public void setValue(StatusActionUrlMapping statusActionUrlMapping, String value) {
                 statusActionUrlMapping.setMethod(HTTPMethod.valueOf(value));
             }
 

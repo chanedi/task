@@ -7,9 +7,9 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.TaskRepository;
+import com.lufax.task.toolwindow.TaskToolWindowPanel;
 import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import com.lufax.task.toolwindow.TaskUpdateConfigurable;
-import com.lufax.task.toolwindow.TaskToolWindowPanel;
 import org.jetbrains.annotations.NotNull;
 
 /** server update action */

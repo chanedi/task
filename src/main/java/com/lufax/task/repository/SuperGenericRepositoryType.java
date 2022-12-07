@@ -18,7 +18,6 @@ import javax.swing.*;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericRepository> {
 
@@ -46,11 +45,8 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
     return SuperGenericRepository.class;
   }
 
-  @NotNull
   @Override
-  public TaskRepositoryEditor createEditor(final SuperGenericRepository repository,
-                                           final Project project,
-                                           final Consumer<? super SuperGenericRepository> changeListener) {
+  public @NotNull TaskRepositoryEditor createEditor(SuperGenericRepository repository, Project project, Consumer<SuperGenericRepository> changeListener) {
     return new SuperGenericRepositoryEditor(project, repository, changeListener);
   }
 
