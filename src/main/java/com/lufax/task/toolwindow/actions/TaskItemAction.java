@@ -42,6 +42,7 @@ public abstract class TaskItemAction extends AnAction {
 
     public static final String BRANCH = "branchName";
     public static final String REVISION = "currentRevision";
+    public static final String APP_NAME = "appName";
 
     protected List<TemplateVariable> getTemplateVariables(Task selectedTask, Project project) {
         TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(project);
@@ -51,6 +52,7 @@ public abstract class TaskItemAction extends AnAction {
         templateVariables.add(new TemplateVariable(SUMMARY, selectedTask.getSummary()));
         templateVariables.add(new TemplateVariable(DESCRIPTION, selectedTask.getDescription() == null ? "" : selectedTask.getDescription()));
         templateVariables.add(new TemplateVariable(SuperGenericRepository.SERVER_URL, configsState.getSelectedTaskRepository().getUrl()));
+        templateVariables.add(new TemplateVariable(APP_NAME, project.getName()));
         if (taskManager.isVcsEnabled()) {
             LocalTask task = taskManager.findTask(selectedTask.getId());
             if (task != null) {
@@ -89,6 +91,7 @@ public abstract class TaskItemAction extends AnAction {
         }
 
         if (selectedTask instanceof SuperGenericTask) {
+            templateVariables.addAll(((SuperGenericRepository) configsState.getSelectedTaskRepository()).getAllTemplateVariables());
             templateVariables.add(new TemplateVariable(STATUS, ((SuperGenericTask) selectedTask).getStatus()));
             templateVariables.add(new TemplateVariable(RELEASE_DATE, ((SuperGenericTask) selectedTask).getReleaseDate()));
             templateVariables.add(new TemplateVariable(TAG, ((SuperGenericTask) selectedTask).getTag()));

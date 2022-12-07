@@ -32,6 +32,7 @@ import com.lufax.task.utils.HttpUtils;
 import com.lufax.task.utils.StringUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.cookie.CookieSpecBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.jetbrains.annotations.NonNls;
@@ -121,11 +122,17 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     @SuppressWarnings({"UnusedDeclaration"})
     public SuperGenericRepository() {
         resetToDefaults();
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
     }
 
     public SuperGenericRepository(final TaskRepositoryType type) {
         super(type);
         resetToDefaults();
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
     }
 
     /**
@@ -157,6 +164,9 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
             handler.setRepository(this);
             myResponseHandlersMap.put(e.getKey(), handler);
         }
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
     }
 
     public void resetToDefaults() {
@@ -180,10 +190,14 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         myResponseHandlersMap.put(ResponseType.TEXT, getTextResponseHandlerDefault());
     }
 
+    static {
+        CookiePolicy.registerCookieSpec(CookiePolicy.DEFAULT, CookieSpecBase.class);
+    }
+
     @Override
     protected void configureHttpClient(HttpClient client) {
         super.configureHttpClient(client);
-        client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        client.getParams().setCookiePolicy(myCookiePolicy);
     }
 
     @NotNull
@@ -204,6 +218,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         if (!Objects.equals(getTasksListUrl(), that.getTasksListUrl())) return false;
         if (!Objects.equals(getSingleTaskUrl(), that.getSingleTaskUrl())) return false;
         if (!Objects.equals(getLoginSuccessCookieName(), that.getLoginSuccessCookieName())) return false;
+        if (!Objects.equals(getCookiePolicy(), that.getCookiePolicy())) return false;
         if (!Comparing.equal(getLoginMethodType(), that.getLoginMethodType())) return false;
         if (!Comparing.equal(getLoginWithTokenMethodType(), that.getLoginWithTokenMethodType())) return false;
         if (!Comparing.equal(getTasksListMethodType(), that.getTasksListMethodType())) return false;
@@ -212,6 +227,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         if (!Comparing.equal(getTemplateVariables(), that.getTemplateVariables())) return false;
         if (!Comparing.equal(getResponseHandlers(), that.getResponseHandlers())) return false;
         if (!Comparing.equal(getDownloadTasksInSeparateRequests(), that.getDownloadTasksInSeparateRequests())) return false;
+        if (!Comparing.equal(getUpdateConfig(), that.getUpdateConfig())) return false;
         return true;
     }
 

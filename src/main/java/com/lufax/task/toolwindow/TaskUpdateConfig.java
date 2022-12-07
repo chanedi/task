@@ -69,4 +69,5 @@ public class TaskUpdateConfig {
         }
         return cancelUrls.get(StatusActionUrlMapping.DEFAULT_STATUS);
     }
+
 }

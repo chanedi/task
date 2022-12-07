@@ -38,7 +38,6 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
   @Override
   public TaskRepository createRepository() {
     SuperGenericRepository repository = new SuperGenericRepository(this);
-    repository.setId(UUID.randomUUID().toString());
     return repository;
   }
 
@@ -59,9 +58,9 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
   public List<TaskRepositorySubtype> getAvailableSubtypes() {
     return Arrays.asList(
             this,
-            new WizardKanbanRepository(),
+//            new WizardKanbanRepository(),
             new WizardWorkBenchRepository(),
-            new IReleaseRepository()
+            new IReleaseDevTaskRepository()
     );
   }
 
@@ -90,7 +89,7 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
       try {
         String configFileName = StringUtil.toLowerCase(myName) + ".xml";
 
-        URL resourceUrl = SuperGenericRepository.class.getResource("connectors/" + configFileName);
+        URL resourceUrl = SuperGenericRepository.class.getResource("/connectors/" + configFileName);
         if (resourceUrl == null) {
           throw new AssertionError("Repository configuration file '" + configFileName + "' not found");
         }
@@ -107,9 +106,9 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
   }
 
   // Subtypes:
-  public final class IReleaseRepository extends SuperGenericSubtype {
-    public IReleaseRepository() {
-      super("IRelease", TaskEnhanceIcons.IRelease);
+  public final class IReleaseDevTaskRepository extends SuperGenericSubtype {
+    public IReleaseDevTaskRepository() {
+      super("IReleaseDevTask", TaskEnhanceIcons.IRelease);
     }
   }
 

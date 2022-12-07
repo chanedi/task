@@ -21,12 +21,8 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
   private final SuperTemplateVariablesTable myTemplateVariableTable;
 
   public ManageTemplateVariablesDialog(@NotNull final Component parent) {
-    this(parent, true);
-  }
-
-  public ManageTemplateVariablesDialog(@NotNull final Component parent, boolean needShowOnFirstTabColumn) {
     super(parent, true);
-    myTemplateVariableTable = new SuperTemplateVariablesTable(needShowOnFirstTabColumn);
+    myTemplateVariableTable = new SuperTemplateVariablesTable();
     setTitle(TaskBundle.message("dialog.title.template.variables"));
     init();
   }
@@ -46,15 +42,8 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
 
   private static class SuperTemplateVariablesTable extends ListTableWithButtons<TemplateVariable> {
 
-    private boolean needShowOnFirstTabColumn = true;
-
     SuperTemplateVariablesTable() {
-      this(true);
-    }
-
-    public SuperTemplateVariablesTable(boolean needShowOnFirstTabColumn) {
       getTableView().getEmptyText().setText(TaskBundle.message("status.text.no.variables"));
-      this.needShowOnFirstTabColumn = needShowOnFirstTabColumn;
     }
 
     @Override
@@ -205,11 +194,7 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
         }
       };
 
-      if (needShowOnFirstTabColumn) {
-        return new ListTableModel(name, value, isShownOnFirstTab, isHidden);
-      } else {
-        return new ListTableModel(name, value, isHidden);
-      }
+      return new ListTableModel(name, value, isShownOnFirstTab, isHidden);
     }
 
     @Override
