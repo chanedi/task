@@ -26,6 +26,7 @@ import com.lufax.task.NeedDynamicTokenException;
 import com.lufax.task.ProcessNeedResultException;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
 import com.lufax.task.utils.HttpUtils;
+import com.lufax.task.utils.StringUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.cookie.CookieSpecBase;
@@ -681,7 +682,8 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         }
         else if (e instanceof ProcessNeedResultException) {
             String message = e.getMessage();
-            Messages.showMessageDialog(project, "Connection is successful", "Connection", Messages.getInformationIcon());
+            Messages.showMessageDialog(project, "Connection is successful. Returned message is: \n\n" + StringUtils.unicodeDecode(message),
+                    "Connection", Messages.getInformationIcon());
         }
         else if (!(e instanceof ProcessCanceledException)) {
             String message = e.getMessage();

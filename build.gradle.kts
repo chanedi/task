@@ -4,10 +4,14 @@ plugins {
 }
 
 group = "com.lufax"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    implementation("com.jayway.jsonpath:json-path:2.6.0")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin

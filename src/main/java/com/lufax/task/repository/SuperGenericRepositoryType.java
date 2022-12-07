@@ -45,7 +45,6 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
     return SuperGenericRepository.class;
   }
 
-  @Override
   public @NotNull TaskRepositoryEditor createEditor(SuperGenericRepository repository, Project project, Consumer<SuperGenericRepository> changeListener) {
     return new SuperGenericRepositoryEditor(project, repository, changeListener);
   }
@@ -57,7 +56,7 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
 //            new WizardKanbanRepository(),
             new WizardWorkBenchRepository(),
             new IReleaseDevTaskRepository(),
-            new IReleaseDevTaskRepository()
+            new IReleaseStoryRepository()
     );
   }
 
