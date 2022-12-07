@@ -1,7 +1,5 @@
 package com.lufax.task.toolwindow;
 
-import com.intellij.util.net.HTTPMethod;
-
 public class ActionUrl {
 
     private String url;
@@ -30,5 +28,9 @@ public class ActionUrl {
 
     public void setMethod(HTTPMethod method) {
         this.method = method;
+    }
+
+    public static enum HTTPMethod {
+        GET, POST, BROWSER;
     }
 }

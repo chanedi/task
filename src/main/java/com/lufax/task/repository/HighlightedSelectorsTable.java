@@ -3,7 +3,6 @@ package com.lufax.task.repository;
 
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
-import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.generic.Selector;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.table.TableView;
@@ -24,13 +23,13 @@ class HighlightedSelectorsTable extends TableView<Selector> {
                             @NotNull final Project project,
                             @NotNull final List<Selector> selectors) {
     super(new ListTableModel<>(new ColumnInfo[]{
-      new ColumnInfo<Selector, String>(TaskBundle.message("column.name.name")) {
+      new ColumnInfo<Selector, String>("Name") {
         @Override
         public @NotNull String valueOf(Selector selector) {
           return selector.getName();
         }
       },
-      new ColumnInfo<Selector, String>(TaskBundle.message("column.name.path")) {
+      new ColumnInfo<Selector, String>("Path") {
 
         @Override
         public @NotNull String valueOf(Selector selector) {

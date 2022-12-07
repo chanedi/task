@@ -1,9 +1,7 @@
 package com.lufax.task.toolwindow.actions;
 
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.tasks.generic.GenericRepositoryUtil;
+import com.lufax.task.toolwindow.ActionUrl;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
 import com.lufax.task.toolwindow.TaskUpdateConfigsState;
 import org.jetbrains.annotations.NotNull;
@@ -14,14 +12,7 @@ public class TaskDetailAction extends TaskItemAction {
     public void actionPerformed(AnActionEvent e) {
         TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(getEventProject(e));
         TaskUpdateConfig updateConfig = configsState.getUpdateConfig();
-        String detailUrl = null;
-        try {
-            detailUrl = GenericRepositoryUtil.substituteTemplateVariables(updateConfig.getDetailUrl(), getTemplateVariables(getSelectedTask(e), getEventProject(e)));
-        } catch (Exception ex) {
-            Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when open task");
-            throw new RuntimeException(ex);
-        }
-        BrowserUtil.browse(detailUrl);
+        doActionUrl(e, null, null, new ActionUrl(updateConfig.getDetailUrl(), ActionUrl.HTTPMethod.BROWSER), "open");
     }
 
     @Override

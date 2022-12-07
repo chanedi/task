@@ -32,7 +32,7 @@ public class TaskToolWindowPanel extends SimpleToolWindowPanel {
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new TaskServerSelectAction(this));
         group.add(new TaskUpdateConfigAction(this));
-        group.addSeparator("fef");
+        group.addSeparator();
         group.addAll(actionManager.getAction("task.toolWindow.toolbar"));
         ActionToolbar actionToolbar = actionManager.createActionToolbar("Task Navigator Toolbar",
                 group,

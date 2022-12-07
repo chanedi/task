@@ -137,4 +137,5 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
   public ResponseType getResponseType() {
     return ResponseType.JSON;
   }
+
 }

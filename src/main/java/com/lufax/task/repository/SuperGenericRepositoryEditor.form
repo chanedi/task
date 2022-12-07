@@ -16,7 +16,7 @@
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="messages/TaskBundle" key="response.type"/>
+          <text value="ResponseType:"/>
         </properties>
       </component>
       <grid id="d68b9" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -44,7 +44,7 @@
               </grid>
             </constraints>
             <properties>
-              <text resource-bundle="messages/TaskBundle" key="text"/>
+              <text value="Te&amp;xt"/>
             </properties>
           </component>
           <component id="71bfc" class="javax.swing.JRadioButton" binding="myJsonRadioButton">
@@ -63,7 +63,7 @@
             </constraints>
             <properties>
               <horizontalTextPosition value="4"/>
-              <text resource-bundle="messages/TaskBundle" key="each.task.in.separate.request"/>
+              <text value="Each task in separate request:"/>
             </properties>
           </component>
           <component id="69199" class="com.intellij.ui.components.JBCheckBox" binding="myDownloadTasksInSeparateRequests">
@@ -94,7 +94,7 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/TaskBundle" key="manage.template.variables"/>
+              <text value="M&amp;anage Template Variables..."/>
             </properties>
           </component>
           <hspacer id="af51e">
@@ -107,7 +107,7 @@
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/TaskBundle" key="reset.to.defaults"/>
+              <text value="&amp;Reset to Defaults"/>
             </properties>
           </component>
           <component id="90cf1" class="javax.swing.JButton" binding="myTestParseTaskButton">
@@ -116,7 +116,7 @@
             </constraints>
             <properties>
               <enabled value="true"/>
-              <text resource-bundle="messages/TaskBundle" key="test"/>
+              <text value="Test &amp;Parse Tasks"/>
               <toolTipText value="任务解析测试"/>
               <visible value="true"/>
             </properties>
@@ -137,7 +137,7 @@
         </constraints>
         <properties>
           <labelFor value="2b4b2"/>
-          <text resource-bundle="messages/TaskBundle" key="single.task.url"/>
+          <text value="&amp;Single Task URL:"/>
         </properties>
       </component>
       <component id="2b4b2" class="com.intellij.ui.EditorTextField" binding="mySingleTaskURLText" custom-create="true" default-binding="true">
@@ -154,7 +154,7 @@
         </constraints>
         <properties>
           <labelFor value="87697"/>
-          <text resource-bundle="messages/TaskBundle" key="tasks.list.url"/>
+          <text value="Tasks &amp;List URL:"/>
         </properties>
       </component>
       <component id="87697" class="com.intellij.ui.EditorTextField" binding="myTasksListURLText" custom-create="true">
@@ -171,7 +171,7 @@
         </constraints>
         <properties>
           <labelFor value="a0a2f"/>
-          <text resource-bundle="messages/TaskBundle" key="login.url"/>
+          <text value="Lo&amp;gin URL:"/>
         </properties>
       </component>
       <component id="a0a2f" class="com.intellij.ui.EditorTextField" binding="myLoginURLText" custom-create="true">
@@ -231,7 +231,7 @@
           </grid>
         </constraints>
         <properties>
-          <text resource-bundle="messages/TaskBundle" key="test"/>
+          <text value="&amp;Test"/>
         </properties>
       </component>
       <component id="536c8" class="javax.swing.JButton" binding="myTest2Button">
@@ -241,7 +241,7 @@
           </grid>
         </constraints>
         <properties>
-          <text resource-bundle="messages/TaskBundle" key="test"/>
+          <text value="Te&amp;st"/>
         </properties>
       </component>
       <component id="3c45e" class="javax.swing.JLabel" binding="myLoginWithTokenURLLabel">
@@ -249,7 +249,7 @@
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Login URL With Token:"/>
+          <text value="Login URL With To&amp;ken:"/>
           <visible value="true"/>
         </properties>
       </component>
@@ -285,7 +285,7 @@
           </grid>
         </constraints>
         <properties>
-          <text resource-bundle="messages/TaskBundle" key="test"/>
+          <text value="T&amp;est"/>
           <visible value="true"/>
         </properties>
       </component>
@@ -294,7 +294,7 @@
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Login Success Cookie Name:"/>
+          <text value="Login Success Cookie &amp;Name:"/>
           <visible value="true"/>
         </properties>
       </component>
@@ -314,7 +314,7 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Cookie Policy:"/>
+          <text value="&amp;Cookie Policy:"/>
           <visible value="true"/>
         </properties>
       </component>

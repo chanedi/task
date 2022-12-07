@@ -2,7 +2,6 @@ package com.lufax.task.repository;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.config.BaseRepositoryEditor;
 import com.intellij.tasks.generic.ResponseType;
@@ -139,7 +138,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     installListener(myTasksListURLText);
     installListener(mySingleTaskURLText);
     installListener(myDownloadTasksInSeparateRequests);
-    myTabbedPane.addTab(TaskBundle.message("server.configuration"), myPanel);
+    myTabbedPane.addTab("Server Configuration", myPanel);
 
     // Put appropriate configuration components on the card panel
     SuperResponseHandler xmlHandler = myRepository.getResponseHandler(ResponseType.XML);

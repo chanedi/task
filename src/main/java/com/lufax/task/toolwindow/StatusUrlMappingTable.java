@@ -3,7 +3,6 @@ package com.lufax.task.toolwindow;
 import com.intellij.execution.util.ListTableWithButtons;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.TaskRepository;
-import com.intellij.util.net.HTTPMethod;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ComboBoxCellEditor;
 import com.intellij.util.ui.ListTableModel;
@@ -122,7 +121,7 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
 
             @Override
             public int getWidth(JTable table) {
-                return 80;
+                return 100;
             }
 
             @Override
@@ -142,7 +141,7 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
 
             @Override
             public void setValue(StatusActionUrlMapping statusActionUrlMapping, String value) {
-                statusActionUrlMapping.setMethod(HTTPMethod.valueOf(value));
+                statusActionUrlMapping.setMethod(ActionUrl.HTTPMethod.valueOf(value));
             }
 
             @Override
@@ -151,7 +150,11 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
 
                     @Override
                     protected List<String> getComboBoxItems() {
-                        return List.of("GET", "POST") ;
+                        List list = new ArrayList();
+                        for (ActionUrl.HTTPMethod value : ActionUrl.HTTPMethod.values()) {
+                            list.add(value.name());
+                        }
+                        return list;
                     }
                 };
             }
@@ -161,7 +164,7 @@ public class StatusUrlMappingTable extends ListTableWithButtons<StatusActionUrlM
 
     @Override
     protected StatusActionUrlMapping createElement() {
-        return new StatusActionUrlMapping("", "", HTTPMethod.GET);
+        return new StatusActionUrlMapping("", "", ActionUrl.HTTPMethod.GET);
     }
 
     @Override

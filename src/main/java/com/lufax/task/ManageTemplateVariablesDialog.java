@@ -3,7 +3,6 @@ package com.lufax.task;
 import com.intellij.execution.util.ListTableWithButtons;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.util.ui.AbstractTableCellEditor;
 import com.intellij.util.ui.ColumnInfo;
@@ -23,7 +22,7 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
   public ManageTemplateVariablesDialog(@NotNull final Component parent) {
     super(parent, true);
     myTemplateVariableTable = new SuperTemplateVariablesTable();
-    setTitle(TaskBundle.message("dialog.title.template.variables"));
+    setTitle("Template Variables");
     init();
   }
   public void setTemplateVariables(List<TemplateVariable> list) {
@@ -43,12 +42,12 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
   private static class SuperTemplateVariablesTable extends ListTableWithButtons<TemplateVariable> {
 
     SuperTemplateVariablesTable() {
-      getTableView().getEmptyText().setText(TaskBundle.message("status.text.no.variables"));
+      getTableView().getEmptyText().setText("No variables");
     }
 
     @Override
     protected ListTableModel createListModel() {
-      final ColumnInfo name = new ElementsColumnInfoBase<TemplateVariable>(TaskBundle.message("column.name.name")) {
+      final ColumnInfo name = new ElementsColumnInfoBase<TemplateVariable>("Name") {
         @Override
         protected @NotNull String getDescription(final TemplateVariable templateVariable) {
           return templateVariable.getDescription();
@@ -74,7 +73,7 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
         }
       };
 
-      final ColumnInfo value = new ElementsColumnInfoBase<TemplateVariable>(TaskBundle.message("column.name.value")) {
+      final ColumnInfo value = new ElementsColumnInfoBase<TemplateVariable>("Value") {
         @Override
         public @NotNull String valueOf(TemplateVariable templateVariable) {
           return templateVariable.getValue();
@@ -136,7 +135,7 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
         }
       };
 
-      final ColumnInfo isShownOnFirstTab = new ColumnInfo<TemplateVariable, Boolean>(TaskBundle.message("column.name.show.on.first.tab")) {
+      final ColumnInfo isShownOnFirstTab = new ColumnInfo<TemplateVariable, Boolean>("Show on first tab") {
         @Override
         public @NotNull Boolean valueOf(TemplateVariable o) {
           return o.isShownOnFirstTab();
@@ -160,11 +159,11 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
 
         @Override
         public @NotNull String getTooltipText() {
-          return TaskBundle.message("tooltip.whether.this.template.variable.will.be.shown.in.general.tab");
+          return "Whether this template variable will be shown in 'General tab'";
         }
       };
 
-      final ColumnInfo isHidden = new ColumnInfo<TemplateVariable, Boolean>(TaskBundle.message("column.name.hide")) {
+      final ColumnInfo isHidden = new ColumnInfo<TemplateVariable, Boolean>("Hide") {
         @Override
         public @NotNull Boolean valueOf(TemplateVariable o) {
           return o.isHidden();
@@ -190,7 +189,7 @@ public class ManageTemplateVariablesDialog extends DialogWrapper {
 
         @Override
         public @NotNull String getTooltipText() {
-          return TaskBundle.message("tooltip.whether.this.template.variable.will.be.hidden.like.password.field");
+          return "Whether this template variable will be hidden like password field";
         }
       };
 

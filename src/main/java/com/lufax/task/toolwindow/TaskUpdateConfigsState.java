@@ -3,10 +3,7 @@
 package com.lufax.task.toolwindow;
 
 import com.intellij.configurationStore.XmlSerializer;
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StoragePathMacros;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.TaskRepository;
@@ -32,7 +29,7 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
   private final Config config = new Config();
 
   public static TaskUpdateConfigsState getInstance(@NotNull Project project) {
-    return project.getService(TaskUpdateConfigsState.class);
+    return ServiceManager.getService(project, TaskUpdateConfigsState.class);
   }
 
   public TaskUpdateConfigsState(@NotNull Project project) {

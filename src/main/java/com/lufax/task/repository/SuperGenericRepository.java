@@ -12,7 +12,6 @@ import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.Task;
-import com.intellij.tasks.TaskBundle;
 import com.intellij.tasks.TaskRepositorySubtype;
 import com.intellij.tasks.TaskRepositoryType;
 import com.intellij.tasks.generic.ResponseType;
@@ -27,7 +26,6 @@ import com.lufax.task.NeedDynamicTokenException;
 import com.lufax.task.ProcessNeedResultException;
 import com.lufax.task.toolwindow.TaskUpdateConfig;
 import com.lufax.task.utils.HttpUtils;
-import com.lufax.task.utils.StringUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.cookie.CookieSpecBase;
@@ -433,6 +431,14 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         return tryConnection(project, myConnection);
     }
 
+    @Override
+    public void setUrl(String url) {
+        super.setUrl(url);
+        if (StringUtil.isEmpty(myUpdateConfig.getName())) {
+            myUpdateConfig.setName(url);
+        }
+    }
+
     public String getId() {
         return id;
     }
@@ -632,11 +638,11 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     }
 
     public boolean tryConnection(@NotNull Project project, @Nullable CancellableConnection myConnection) {
-        TestConnectionTask task = new TestConnectionTask(project, TaskBundle.message("dialog.title.test.connection"), true) {
+        TestConnectionTask task = new TestConnectionTask(project, "Test connection", true) {
 
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
-                indicator.setText(TaskBundle.message("progress.text.connecting.to", getUrl()));
+                indicator.setText("Connecting to " + getUrl() + "...");
                 indicator.setFraction(0);
                 indicator.setIndeterminate(true);
                 try {
@@ -671,24 +677,22 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         ProgressManager.getInstance().run(task);
         Exception e = task.myException;
         if (e == null) {
-            Messages.showMessageDialog(project, TaskBundle.message("dialog.message.connection.successful"),
-                    TaskBundle.message("dialog.title.connection"), Messages.getInformationIcon());
+            Messages.showMessageDialog(project, "Connection is successful", "Connection", Messages.getInformationIcon());
         }
         else if (e instanceof ProcessNeedResultException) {
             String message = e.getMessage();
-            Messages.showMessageDialog(project, TaskBundle.message("dialog.message.connection.successful") + ". Returned message is: \n\n" + StringUtils.unicodeDecode(message),
-                    TaskBundle.message("dialog.title.connection"), Messages.getInformationIcon());
+            Messages.showMessageDialog(project, "Connection is successful", "Connection", Messages.getInformationIcon());
         }
         else if (!(e instanceof ProcessCanceledException)) {
             String message = e.getMessage();
             if (e instanceof UnknownHostException) {
-                message = TaskBundle.message("dialog.message.unknown.host", message);
+                message = "Unknown host: " + message;
             }
             if (message == null) {
                 LOG.error(e);
-                message = TaskBundle.message("dialog.message.unknown.error");
+                message = "Unknown error";
             }
-            Messages.showErrorDialog(project, StringUtil.capitalize(message), TaskBundle.message("dialog.title.error"));
+            Messages.showErrorDialog(project, StringUtil.capitalize(message), "Error");
         }
         return e == null;
     }

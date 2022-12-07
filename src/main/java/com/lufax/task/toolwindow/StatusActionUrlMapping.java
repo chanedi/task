@@ -1,22 +1,20 @@
 package com.lufax.task.toolwindow;
 
-import com.intellij.util.net.HTTPMethod;
-
 public class StatusActionUrlMapping implements Cloneable {
 
     public static final String DEFAULT_STATUS = "default";
     private String status;
     private String url;
-    private HTTPMethod method;
+    private ActionUrl.HTTPMethod method;
     private boolean isDefault = false;
 
     public StatusActionUrlMapping() {
         this.status = "";
         this.url = "";
-        this.method = HTTPMethod.GET;
+        this.method = ActionUrl.HTTPMethod.GET;
     }
 
-    public StatusActionUrlMapping(String status, String url, HTTPMethod method) {
+    public StatusActionUrlMapping(String status, String url, ActionUrl.HTTPMethod method) {
         this.status = status;
         this.url = url;
         this.method = method;
@@ -38,11 +36,11 @@ public class StatusActionUrlMapping implements Cloneable {
         this.url = url;
     }
 
-    public HTTPMethod getMethod() {
+    public ActionUrl.HTTPMethod getMethod() {
         return method;
     }
 
-    public void setMethod(HTTPMethod method) {
+    public void setMethod(ActionUrl.HTTPMethod method) {
         this.method = method;
     }
 

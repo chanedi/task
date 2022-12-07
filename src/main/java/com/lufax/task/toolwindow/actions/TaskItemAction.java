@@ -2,22 +2,25 @@ package com.lufax.task.toolwindow.actions;
 
 import com.intellij.dvcs.branch.DvcsTaskHandler;
 import com.intellij.dvcs.repo.Repository;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsTaskHandler;
-import com.intellij.tasks.BranchInfo;
-import com.intellij.tasks.LocalTask;
-import com.intellij.tasks.Task;
-import com.intellij.tasks.TaskManager;
+import com.intellij.tasks.*;
+import com.intellij.tasks.generic.GenericRepositoryUtil;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.net.HTTPMethod;
 import com.lufax.task.repository.SuperGenericRepository;
 import com.lufax.task.repository.SuperGenericTask;
+import com.lufax.task.toolwindow.ActionUrl;
 import com.lufax.task.toolwindow.TaskListTableModel;
 import com.lufax.task.toolwindow.TaskUpdateConfigsState;
+import com.lufax.task.utils.HttpUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,6 +34,34 @@ public abstract class TaskItemAction extends AnAction {
     public static final String BRANCH = "branchName";
     public static final String REVISION = "currentRevision";
     public static final String APP_NAME = "appName";
+
+    protected void doActionUrl(AnActionEvent e, TaskRepository taskRepository, Task selectedTask, ActionUrl actionUrl, String actionName) {
+        Project project = getEventProject(e);
+        if (actionUrl.getMethod() == ActionUrl.HTTPMethod.BROWSER) {
+            String url = null;
+            try {
+                url = GenericRepositoryUtil.substituteTemplateVariables(actionUrl.getUrl(), getTemplateVariables(getSelectedTask(e), project));
+            } catch (Exception ex) {
+                Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when " + actionName + " task");
+                throw new RuntimeException(ex);
+            }
+            BrowserUtil.browse(url);
+        } else {
+            int confirm = Messages.showOkCancelDialog(project, "Are you sure you want to " + actionName + " task?", "Confirm " + actionName, Messages.getQuestionIcon());
+            if (confirm != Messages.OK) {
+                return;
+            }
+
+            try {
+                String result = HttpUtils.executeMethod(taskRepository, HTTPMethod.valueOf(actionUrl.getMethod().name()), actionUrl.getUrl(), getTemplateVariables(selectedTask, project));
+                Messages.showInfoMessage(result, StringUtil.capitalize(actionName) + " task result");
+            } catch (Exception ex) {
+                Messages.showErrorDialog(ex.getLocalizedMessage(), "Occur error when " + actionName + " task");
+                throw new RuntimeException(ex);
+            }
+            refreshTable(e);
+        }
+    }
 
     protected List<TemplateVariable> getTemplateVariables(Task selectedTask, Project project) {
         TaskUpdateConfigsState configsState = TaskUpdateConfigsState.getInstance(project);

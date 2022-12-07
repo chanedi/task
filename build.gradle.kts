@@ -13,7 +13,7 @@ repositories {
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
 //    version.set("2021.2")
-    version.set("2020.1")
+    version.set("2019.1")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("com.intellij.tasks", "Git4Idea"))
@@ -22,12 +22,12 @@ intellij {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "8"
+        targetCompatibility = "8"
     }
 
     patchPluginXml {
-        sinceBuild.set("211")
+        sinceBuild.set("191")
         untilBuild.set("222.*")
     }
 
