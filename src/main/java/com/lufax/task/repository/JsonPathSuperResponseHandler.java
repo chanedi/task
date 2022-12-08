@@ -53,7 +53,7 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
     }
     JSONPath jsonPath = lazyCompile(selector.getPath());
     Object result = jsonPath.eval(source);
-    LOG.info((String) result);
+    LOG.info("json parse result:" + (result == null ? "null" : result.toString()));
     return result;
   }
 
