@@ -2,6 +2,7 @@ package com.lufax.task.toolwindow;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
@@ -13,6 +14,9 @@ import com.lufax.task.toolwindow.actions.TaskServerSelectAction;
 import com.lufax.task.toolwindow.actions.TaskUpdateConfigAction;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TaskToolWindowPanel extends SimpleToolWindowPanel {
 
     private Project project;
@@ -22,20 +26,23 @@ public class TaskToolWindowPanel extends SimpleToolWindowPanel {
         super(true, true);
         this.project = project;
 
-//        @NotNull List<AnAction> actions = new ArrayList<>();
-//        actions.add(new TaskServerSelectAction(this));
-//        actions.add(new TaskUpdateConfigAction(this));
-//        toolWindow.setTitleActions(actions);
+        @NotNull List<AnAction> actions = new ArrayList<>();
+        actions.add(new TaskServerSelectAction(this));
+        actions.add(new TaskUpdateConfigAction(this));
+        toolWindow.setTitleActions(actions);
 
         // toolbar
         final ActionManager actionManager = ActionManager.getInstance();
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.add(new TaskServerSelectAction(this));
-        group.add(new TaskUpdateConfigAction(this));
-        group.addSeparator();
-        group.addAll(actionManager.getAction("task.toolWindow.toolbar"));
+//        DefaultActionGroup group = new DefaultActionGroup();
+//        group.add(new TaskServerSelectAction(this));
+//        group.add(new TaskUpdateConfigAction(this));
+//        group.addSeparator();
+//        group.addAll(actionManager.getAction("task.toolWindow.toolbar"));
+//        ActionToolbar actionToolbar = actionManager.createActionToolbar("Task Navigator Toolbar",
+//                group,
+//                true);
         ActionToolbar actionToolbar = actionManager.createActionToolbar("Task Navigator Toolbar",
-                group,
+                (DefaultActionGroup)actionManager.getAction("task.toolWindow.toolbar"),
                 true);
         actionToolbar.setTargetComponent(taskTable);
         setToolbar(actionToolbar.getComponent());
