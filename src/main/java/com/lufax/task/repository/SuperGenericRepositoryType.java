@@ -45,8 +45,9 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
     return SuperGenericRepository.class;
   }
 
+  @NotNull
   @Override
-  public @NotNull TaskRepositoryEditor createEditor(SuperGenericRepository repository, Project project, Consumer<? super SuperGenericRepository> changeListener) {
+  public TaskRepositoryEditor createEditor(SuperGenericRepository repository, Project project, Consumer<SuperGenericRepository> changeListener) {
     return new SuperGenericRepositoryEditor(project, repository, changeListener);
   }
 

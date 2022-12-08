@@ -22,7 +22,7 @@ public class TaskServerSelectAction extends ComboBoxAction {
 
     public TaskServerSelectAction(@NotNull TaskToolWindowPanel taskToolWindowPanel) {
         this.taskToolWindowPanel = taskToolWindowPanel;
-        this.myPopupTitle = "Select A Task Server";
+//        this.myPopupTitle = "Select A Task Server";
 
         project = taskToolWindowPanel.getProject();
 
