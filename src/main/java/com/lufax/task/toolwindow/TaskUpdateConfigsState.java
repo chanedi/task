@@ -107,7 +107,7 @@ public class TaskUpdateConfigsState implements PersistentStateComponent<TaskUpda
         if (repository.equals(selectedTaskRepository)) {
           return selectedTaskRepository;
         } else if (repository instanceof SuperGenericRepository && ((SuperGenericRepository) repository).idEquals(selectedTaskRepository)) {
-          return selectedTaskRepository;
+          return selectedTaskRepository = repository;
         }
       }
     }

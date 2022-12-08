@@ -1,9 +1,11 @@
 package com.lufax.task.toolwindow;
 
+import com.intellij.openapi.util.Comparing;
 import com.intellij.tasks.TaskRepository;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class TaskUpdateConfig {
 
@@ -69,6 +71,18 @@ public class TaskUpdateConfig {
             return actionUrl;
         }
         return cancelUrls.get(StatusActionUrlMapping.DEFAULT_STATUS);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TaskUpdateConfig)) return false;
+        TaskUpdateConfig that = (TaskUpdateConfig) o;
+        if (!Objects.equals(getName(), that.getName())) return false;
+        if (!Objects.equals(getDetailUrl(), that.getDetailUrl())) return false;
+        if (!Comparing.equal(getCompleteUrls(), that.getCompleteUrls())) return false;
+        if (!Comparing.equal(getCancelUrls(), that.getCancelUrls())) return false;
+        return true;
     }
 
 }
