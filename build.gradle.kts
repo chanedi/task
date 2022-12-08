@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.lufax"
-version = "1.0.211"
+version = "1.0.191"
 
 repositories {
     mavenCentral()
@@ -31,7 +31,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("191")
+//        sinceBuild.set("191")
         untilBuild.set("203.*")
     }
 
