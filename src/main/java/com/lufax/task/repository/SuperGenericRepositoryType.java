@@ -54,7 +54,7 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
   public List<TaskRepositorySubtype> getAvailableSubtypes() {
     return Arrays.asList(
             this,
-//            new WizardKanbanRepository(),
+            new WizardKanbanRepository(),
             new WizardWorkBenchRepository(),
             new IReleaseDevTaskRepository(),
             new IReleaseStoryRepository()
