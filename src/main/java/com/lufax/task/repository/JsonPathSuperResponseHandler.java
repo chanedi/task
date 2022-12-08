@@ -21,6 +21,8 @@ import java.util.Map;
 @Tag("JsonSuperResponseHandler")
 public final class JsonPathSuperResponseHandler extends SelectorBasedSuperResponseHandler {
 
+  private static final Logger LOG = Logger.getInstance(SuperGenericRepository.class);
+
   private static final Map<Class<?>, String> JSON_TYPES = ContainerUtil.newHashMap(
           new Pair<>(Map.class, "JSON object"),
           new Pair<>(List.class, "JSON array"),
@@ -49,7 +51,9 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
       return null;
     }
     JSONPath jsonPath = lazyCompile(selector.getPath());
-    return jsonPath.eval(source);
+    Object result = jsonPath.eval(source);
+    LOG.info((String) result);
+    return result;
   }
 
   @Nullable
