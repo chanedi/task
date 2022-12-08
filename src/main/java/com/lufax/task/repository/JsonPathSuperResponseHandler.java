@@ -2,6 +2,7 @@
 package com.lufax.task.repository;
 
 import com.alibaba.fastjson.JSONPath;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.generic.ResponseType;
@@ -52,7 +53,7 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
     }
     JSONPath jsonPath = lazyCompile(selector.getPath());
     Object result = jsonPath.eval(source);
-    LOG.info((String) result);
+    LOG.info("json parse result:" + (result == null ? "null" : result.toString()));
     return result;
   }
 
