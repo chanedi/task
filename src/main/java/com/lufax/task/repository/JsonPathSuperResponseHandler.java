@@ -1,63 +1,36 @@
 // Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.lufax.task.repository;
 
+import com.alibaba.fastjson.JSONPath;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.generic.ResponseType;
 import com.intellij.tasks.generic.Selector;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xmlb.annotations.Tag;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.InvalidPathException;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mikhail Golubev
  */
 @Tag("JsonSuperResponseHandler")
 public final class JsonPathSuperResponseHandler extends SelectorBasedSuperResponseHandler {
-  static {
-    Configuration.setDefaults(new Configuration.Defaults() {
-      private final JsonProvider jsonProvider = new JacksonJsonProvider();
-      private final MappingProvider mappingProvider = new JacksonMappingProvider();
 
-      @Override
-      public JsonProvider jsonProvider() {
-        return jsonProvider;
-      }
+  private static final Map<Class<?>, String> JSON_TYPES = ContainerUtil.newHashMap(
+          new Pair<>(Map.class, "JSON object"),
+          new Pair<>(List.class, "JSON array"),
+          new Pair<>(String.class, "JSON string"),
+          new Pair<>(Integer.class, "JSON number"),
+          new Pair<>(Double.class, "JSON number"),
+          new Pair<>(Boolean.class, "JSON boolean")
+  );
 
-      @Override
-      public MappingProvider mappingProvider() {
-        return mappingProvider;
-      }
-
-      @Override
-      public Set<Option> options() {
-        return EnumSet.noneOf(Option.class);
-      }
-    });
-  }
-
-  private static final Map<Class<?>, String> JSON_TYPES = new HashMap<>();
-
-  static {
-    JSON_TYPES.put(Map.class, "JSON object");
-    JSON_TYPES.put(List.class, "JSON array");
-    JSON_TYPES.put(String.class, "JSON string");
-    JSON_TYPES.put(Integer.class, "JSON number");
-    JSON_TYPES.put(Double.class, "JSON number");
-    JSON_TYPES.put(Boolean.class, "JSON boolean");
-  }
-
-  private final Map<String, JsonPath> myCompiledCache = new HashMap<>();
+  private final Map<String, JSONPath> myCompiledCache = new HashMap<>();
 
   /**
    * Serialization constructor
@@ -75,18 +48,8 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
     if (StringUtil.isEmpty(selector.getPath())) {
       return null;
     }
-    JsonPath jsonPath = lazyCompile(selector.getPath());
-    Object value;
-    try {
-      value = jsonPath.read(source);
-    }
-    catch (InvalidPathException e) {
-      throw new Exception(String.format("JsonPath expression '%s' doesn't match", selector.getPath()), e);
-    }
-    if (value == null) {
-      return null;
-    }
-    return value;
+    JSONPath jsonPath = lazyCompile(selector.getPath());
+    return jsonPath.eval(source);
   }
 
   @Nullable
@@ -113,8 +76,7 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
     if (list == null) {
       return ContainerUtil.emptyList();
     }
-    JsonProvider jsonProvider = Configuration.defaultConfiguration().jsonProvider();
-    return ContainerUtil.getFirstItems(ContainerUtil.map2List(list, o -> jsonProvider.toJson(o)), max);
+    return ContainerUtil.getFirstItems(ContainerUtil.map2List(list, o -> o.toString()), max);
   }
 
   @Nullable
@@ -126,7 +88,7 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
       return null;
     }
     if (value instanceof String || value instanceof Number || value instanceof Boolean) {
-      return value.toString(); //NON-NLS
+      return value.toString();
     }
     throw new Exception(String.format("JsonPath expression '%s' should match string value. Got '%s' instead",
             selector.getPath(), value));
@@ -145,16 +107,11 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
   }
 
   @NotNull
-  private JsonPath lazyCompile(@NotNull String path) throws Exception {
-    JsonPath jsonPath = myCompiledCache.get(path);
+  private JSONPath lazyCompile(@NotNull String path) throws Exception {
+    JSONPath jsonPath = myCompiledCache.get(path);
     if (jsonPath == null) {
-      try {
-        jsonPath = JsonPath.compile(path);
-        myCompiledCache.put(path, jsonPath);
-      }
-      catch (InvalidPathException e) {
-        throw new Exception(String.format("Malformed JsonPath expression '%s'", path));
-      }
+      jsonPath = JSONPath.compile(path);
+      myCompiledCache.put(path, jsonPath);
     }
     return jsonPath;
   }

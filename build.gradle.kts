@@ -11,13 +11,13 @@ repositories {
 }
 
 dependencies {
-    implementation("com.jayway.jsonpath:json-path:2.6.0")
+    implementation("com.alibaba:fastjson:2.0.20")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-//    version.set("2021.2")
-    version.set("2019.1")
+    version.set("2021.1")
+//    version.set("2019.1")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("com.intellij.tasks", "Git4Idea"))
@@ -31,8 +31,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("191")
-        untilBuild.set("222.*")
+        sinceBuild.set("211")
+//        untilBuild.set("222.*")
     }
 
     signPlugin {
