@@ -27,6 +27,7 @@
         <toolWindow id="Task" anchor="bottom" icon="TaskEnhanceIcons.ToolWindowTasks"
                     factoryClass="com.lufax.task.toolwindow.TaskToolWindowFactory"/>
         <projectService serviceImplementation="com.lufax.task.toolwindow.TaskUpdateConfigsState"/>
+        <tasks.commitPlaceholderProvider implementation="com.lufax.task.repository.SuperCommitPlaceholderProvider"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij.tasks">
         <repositoryType implementation="com.lufax.task.repository.SuperGenericRepositoryType" />
