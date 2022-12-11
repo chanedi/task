@@ -13,17 +13,28 @@ import org.jetbrains.annotations.NotNull;
 
 public class GotoLocalTaskAction extends TaskItemAction {
 
+    private static ThreadLocal<Task> selectedTask = new ThreadLocal<>();
+
+    public static Task getSelectedTask() {
+        return selectedTask.get();
+    }
+
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = getEventProject(e);
         TaskManager taskManager = TaskManager.getManager(project);
         Task task = getSelectedTask(e);
-        LocalTask localTask = taskManager.findTask(task.getId());
 
+        LocalTask localTask = taskManager.findTask(task.getId());
         if (localTask != null) {
             taskManager.activateTask(localTask, true);
         } else {
-            showOpenTaskDialog(project, task);
+            selectedTask.set(task);
+            try {
+                showOpenTaskDialog(project, task);
+            } finally {
+                selectedTask.remove();
+            }
         }
     }
 
