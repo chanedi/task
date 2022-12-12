@@ -29,12 +29,7 @@ public class GotoLocalTaskAction extends TaskItemAction {
         if (localTask != null) {
             taskManager.activateTask(localTask, true);
         } else {
-            selectedTask.set(task);
-            try {
-                showOpenTaskDialog(project, task);
-            } finally {
-                selectedTask.remove();
-            }
+            showOpenTaskDialog(project, task);
         }
     }
 
@@ -47,7 +42,17 @@ public class GotoLocalTaskAction extends TaskItemAction {
     private static void showOpenTaskDialog(final Project project, final Task task) {
         JBPopup hint = DocumentationManager.getInstance(project).getDocInfoHint();
         if (hint != null) hint.cancel();
-        ApplicationManager.getApplication().invokeLater(() -> new OpenTaskDialog(project, task).show());
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                selectedTask.set(task);
+                try {
+                    new OpenTaskDialog(project, task).show();
+                } finally {
+                    selectedTask.remove();
+                }
+            }
+        });
     }
 
 }
