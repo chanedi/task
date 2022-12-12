@@ -27,22 +27,24 @@ public class SuperCommitPlaceholderProvider extends DefaultCommitPlaceholderProv
         }
 
         Task selectedTask = GotoLocalTaskAction.getSelectedTask();
-        if (selectedTask != null && selectedTask instanceof SuperGenericTask) {
-            if (CUSTOM_FIELD_1.equals(placeholder)) {
-                return ((SuperGenericTask) selectedTask).getCustomField1();
-            }
-            if (CUSTOM_FIELD_2.equals(placeholder)) {
-                return ((SuperGenericTask) selectedTask).getCustomField2();
-            }
-            if (CUSTOM_FIELD_3.equals(placeholder)) {
-                return ((SuperGenericTask) selectedTask).getCustomField3();
-            }
-            if (CUSTOM_FIELD_4.equals(placeholder)) {
-                return ((SuperGenericTask) selectedTask).getCustomField4();
-            }
-            if (CUSTOM_FIELD_5.equals(placeholder)) {
-                return ((SuperGenericTask) selectedTask).getCustomField5();
-            }
+        if (selectedTask != null && !(selectedTask instanceof SuperGenericTask)) {
+            selectedTask = null;
+        }
+
+        if (CUSTOM_FIELD_1.equals(placeholder)) {
+            return selectedTask == null ? "" : ((SuperGenericTask) selectedTask).getCustomField1();
+        }
+        if (CUSTOM_FIELD_2.equals(placeholder)) {
+            return selectedTask == null ? "" : ((SuperGenericTask) selectedTask).getCustomField2();
+        }
+        if (CUSTOM_FIELD_3.equals(placeholder)) {
+            return selectedTask == null ? "" : ((SuperGenericTask) selectedTask).getCustomField3();
+        }
+        if (CUSTOM_FIELD_4.equals(placeholder)) {
+            return selectedTask == null ? "" : ((SuperGenericTask) selectedTask).getCustomField4();
+        }
+        if (CUSTOM_FIELD_5.equals(placeholder)) {
+            return selectedTask == null ? "" : ((SuperGenericTask) selectedTask).getCustomField5();
         }
 
         throw new IllegalArgumentException(placeholder);
