@@ -17,6 +17,7 @@ package com.lufax.task.toolwindow.actions.gotolocal;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.LocalTask;
+import com.intellij.tasks.Task;
 import com.intellij.tasks.ui.TaskDialogPanel;
 import com.intellij.tasks.ui.TaskDialogPanelProvider;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,11 @@ import org.jetbrains.annotations.Nullable;
  * @author Dmitry Avdeev
  */
 public class SuperTaskDialogPanelProvider extends TaskDialogPanelProvider {
+
+  @Nullable
+  public TaskDialogPanel getOpenTaskPanel(@NotNull Project project, @NotNull Task task) {
+    return null;
+  }
 
   @Nullable
   @Override
