@@ -30,6 +30,7 @@ public class SuperTaskDialogPanelProvider extends TaskDialogPanelProvider {
 
   @Nullable
   public TaskDialogPanel getOpenTaskPanel(@NotNull Project project, @NotNull Task task) {
+    // Deprecated by old version
     return null;
   }
 
