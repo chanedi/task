@@ -96,7 +96,7 @@ public class SuperOpenTaskPanel extends TaskDialogPanel {
             props.putAll((Map<?, ?>) formatFromExtensionsMethod.invoke(null, myLocalTask));
             FileTemplateUtil.createFromTemplate(template, file.getName(), props, psiManager.findDirectory(dir));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOG.error("Occur error when create release file:" + e.getMessage(), e);
         }
     }
 }
