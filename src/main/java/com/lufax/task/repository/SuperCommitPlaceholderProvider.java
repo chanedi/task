@@ -26,7 +26,7 @@ public class SuperCommitPlaceholderProvider extends DefaultCommitPlaceholderProv
         } catch (IllegalArgumentException e) {
         }
 
-        Task selectedTask = GotoLocalTaskAction.getSelectedTask();
+        Task selectedTask = GotoLocalTaskAction.getRepositoryTask(task);
         if (selectedTask != null && !(selectedTask instanceof SuperGenericTask)) {
             selectedTask = null;
         }
