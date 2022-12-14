@@ -1,0 +1,13 @@
+[DEP]
+
+[DB1]
+#发布前运行需要运行的脚本
+
+[DB2]
+#发布后运行需要运行的脚本
+
+[NOTIFY]
+#发布成功后需要邮件通知的列表
+
+[ADVICE]
+1.${defaultCommitMessage}

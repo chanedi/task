@@ -27,7 +27,9 @@
         <toolWindow id="Task" anchor="bottom" icon="TaskEnhanceIcons.ToolWindowTasks"
                     factoryClass="com.lufax.task.toolwindow.TaskToolWindowFactory"/>
         <projectService serviceImplementation="com.lufax.task.toolwindow.TaskUpdateConfigsState"/>
+        <internalFileTemplate name="Release File"/>
         <tasks.commitPlaceholderProvider implementation="com.lufax.task.repository.SuperCommitPlaceholderProvider"/>
+        <tasks.dialogPanelProvider implementation="com.lufax.task.toolwindow.actions.gotolocal.SuperTaskDialogPanelProvider"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij.tasks">
         <repositoryType implementation="com.lufax.task.repository.SuperGenericRepositoryType" />

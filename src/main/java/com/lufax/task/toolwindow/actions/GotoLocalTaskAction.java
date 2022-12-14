@@ -11,12 +11,16 @@ import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.actions.OpenTaskDialog;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 public class GotoLocalTaskAction extends TaskItemAction {
 
-    private static ThreadLocal<Task> selectedTask = new ThreadLocal<>();
+    private static Map<String, Task> localTaskMap = new HashMap<>();
 
-    public static Task getSelectedTask() {
-        return selectedTask.get();
+    public static Task getRepositoryTask(LocalTask localTask) {
+        return localTaskMap.get(localTask.getId());
     }
 
     @Override
@@ -42,16 +46,19 @@ public class GotoLocalTaskAction extends TaskItemAction {
     private static void showOpenTaskDialog(final Project project, final Task task) {
         JBPopup hint = DocumentationManager.getInstance(project).getDocInfoHint();
         if (hint != null) hint.cancel();
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                selectedTask.set(task);
-                try {
-                    new OpenTaskDialog(project, task).show();
-                } finally {
-                    selectedTask.remove();
-                }
+        ApplicationManager.getApplication().invokeLater(() -> {
+            OpenTaskDialog openTaskDialog = new OpenTaskDialog(project, task);
+            try {
+                Field field = OpenTaskDialog.class.getDeclaredField("myTask");
+                field.setAccessible(true);
+                LocalTask localTask = (LocalTask) field.get(openTaskDialog);
+                localTaskMap.put(localTask.getId(), task);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
+            openTaskDialog.show();
         });
     }
 
