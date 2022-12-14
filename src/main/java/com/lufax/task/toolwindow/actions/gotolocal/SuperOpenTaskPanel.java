@@ -19,7 +19,6 @@ import com.lufax.task.toolwindow.actions.GotoLocalTaskAction;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -91,7 +90,7 @@ public class SuperOpenTaskPanel extends TaskDialogPanel {
         try {
             Method formatFromExtensionsMethod = TaskUtil.class.getDeclaredMethod("formatFromExtensions", LocalTask.class);
             formatFromExtensionsMethod.setAccessible(true);
-            @Nullable Properties props = new Properties();
+            Properties props = new Properties();
             props.put("defaultCommitMessage", TaskUtil.getChangeListComment(myLocalTask));
             props.putAll((Map<?, ?>) formatFromExtensionsMethod.invoke(null, myLocalTask));
             FileTemplateUtil.createFromTemplate(template, file.getName(), props, psiManager.findDirectory(dir));
