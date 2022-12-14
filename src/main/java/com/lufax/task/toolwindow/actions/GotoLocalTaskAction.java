@@ -53,9 +53,7 @@ public class GotoLocalTaskAction extends TaskItemAction {
                 field.setAccessible(true);
                 LocalTask localTask = (LocalTask) field.get(openTaskDialog);
                 localTaskMap.put(localTask.getId(), task);
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             openTaskDialog.show();
