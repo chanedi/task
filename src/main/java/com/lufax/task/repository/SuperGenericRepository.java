@@ -336,6 +336,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         if (StringUtil.isEmpty(getLoginSuccessCookieName()) || !needCheckCookieName) {
             return;
         }
+        LOG.info("checkCookieName: " + getLoginSuccessCookieName() + "cookies" + state.getCookies().toString());
         for (Cookie cookie : state.getCookies()) {
             if (cookie.getName().equals(getLoginSuccessCookieName())) {
                 return;
