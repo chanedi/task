@@ -92,11 +92,9 @@ public final class JsonPathSuperResponseHandler extends SelectorBasedSuperRespon
     if (value == null) {
       return null;
     }
-    if (value instanceof String || value instanceof Number || value instanceof Boolean) {
-      return value.toString();
-    }
-    throw new Exception(String.format("JsonPath expression '%s' should match string value. Got '%s' instead",
-            selector.getPath(), value));
+    return value.toString();
+//    throw new Exception(String.format("JsonPath expression '%s' should match string value. Got '%s' instead",
+//            selector.getPath(), value));
   }
 
   @Nullable
