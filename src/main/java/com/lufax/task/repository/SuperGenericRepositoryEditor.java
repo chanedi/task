@@ -3,7 +3,6 @@ package com.lufax.task.repository;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.tasks.TaskManager;
-import com.intellij.tasks.config.BaseRepositoryEditor;
 import com.intellij.tasks.generic.ResponseType;
 import com.intellij.tasks.generic.TemplateVariable;
 import com.intellij.ui.EditorTextField;
@@ -17,6 +16,7 @@ import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
 import com.lufax.task.ManageTemplateVariablesDialog;
 import com.lufax.task.utils.SwingUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -54,13 +54,15 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
   private JBCheckBox myDownloadTasksInSeparateRequests;
   private JButton myTestLoginButton;
   private JButton myTestParseTaskButton;
-  private JTextField myLoginSuccessCookieNameText;
+  private EditorTextField myLoginSuccessCookieNameText;
   private EditorTextField myLoginWithTokenURLText;
   private JLabel myLoginWithTokenURLLabel;
   private JLabel myLoginSuccessCookieNameLabel;
   private ComboBox myLoginWithTokenMethodTypeComboBox;
   private JButton myTestLoginWithTokenButton;
   private JComboBox myCookiePolicyCombo;
+  private JCheckBox myNeedDynamicTokenCheckBox;
+  private JLabel myCookiePolicyLabel;
 
   private Map<JTextField, TemplateVariable> myField2Variable;
   private final Map<JRadioButton, ResponseType> myRadio2ResponseType;
@@ -100,6 +102,12 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
         loginUrlEnablingChanged();
       }
     });
+    myNeedDynamicTokenCheckBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        loginWithTokenEnablingChanged();
+      }
+    });
     myUseHttpAuthenticationCheckBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -125,6 +133,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myTasksListMethodTypeComboBox.setSelectedItem(myRepository.getTasksListMethodType().toString()); //NON-NLS
     mySingleTaskMethodComboBox.setSelectedItem(myRepository.getSingleTaskMethodType().toString()); //NON-NLS
     myCookiePolicyCombo.setSelectedItem(myRepository.getCookiePolicy());
+    myNeedDynamicTokenCheckBox.setSelected(StringUtils.isNotBlank(myRepository.getLoginSuccessCookieName()));
 
     // set default listener updating model fields
     installListener(myLoginMethodTypeComboBox);
@@ -138,6 +147,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     installListener(myTasksListURLText);
     installListener(mySingleTaskURLText);
     installListener(myDownloadTasksInSeparateRequests);
+    installListener(myNeedDynamicTokenCheckBox);
     myTabbedPane.addTab("Server Configuration", myPanel);
 
     // Put appropriate configuration components on the card panel
@@ -189,6 +199,7 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     selectRadioButtonByResponseType();
     selectCardByResponseType();
     loginUrlEnablingChanged();
+    loginWithTokenEnablingChanged();
     singleTaskUrlEnablingChanged();
     myDownloadTasksInSeparateRequests.setSelected(myRepository.getDownloadTasksInSeparateRequests());
   }
@@ -205,12 +216,22 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     boolean enabled = !myLoginAnonymouslyJBCheckBox.isSelected() && !myUseHttpAuthenticationCheckBox.isSelected();
     myLoginURLLabel.setEnabled(enabled);
     myLoginURLText.setEnabled(enabled);
-    myLoginSuccessCookieNameLabel.setEnabled(enabled);
-    myLoginSuccessCookieNameText.setEnabled(enabled);
-    myLoginWithTokenURLLabel.setEnabled(enabled);
-    myLoginWithTokenURLText.setEnabled(enabled);
     myLoginMethodTypeComboBox.setEnabled(enabled);
-    myLoginWithTokenMethodTypeComboBox.setEnabled(enabled);
+    myTestLoginButton.setEnabled(enabled);
+    myNeedDynamicTokenCheckBox.setSelected(false);
+    myLoginSuccessCookieNameText.setText("");
+  }
+
+  protected void loginWithTokenEnablingChanged() {
+    boolean enabled = myNeedDynamicTokenCheckBox.isSelected();
+    myLoginSuccessCookieNameLabel.setVisible(enabled);
+    myLoginSuccessCookieNameText.setVisible(enabled);
+    myLoginWithTokenURLLabel.setVisible(enabled);
+    myLoginWithTokenURLText.setVisible(enabled);
+    myLoginWithTokenMethodTypeComboBox.setVisible(enabled);
+    myCookiePolicyLabel.setVisible(enabled);
+    myCookiePolicyCombo.setVisible(enabled);
+    myTestLoginWithTokenButton.setVisible(enabled);
   }
 
   @Nullable
@@ -243,9 +264,11 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myLoginWithTokenMethodTypeComboBox.setSelectedItem(clone.getLoginWithTokenMethodType());
     myTasksListMethodTypeComboBox.setSelectedItem(clone.getTasksListMethodType());
     mySingleTaskMethodComboBox.setSelectedItem(clone.getSingleTaskMethodType());
+    myNeedDynamicTokenCheckBox.setSelected(StringUtils.isNotBlank(clone.getLoginSuccessCookieName()));
     selectRadioButtonByResponseType();
     selectCardByResponseType();
     loginUrlEnablingChanged();
+    loginWithTokenEnablingChanged();
     myDownloadTasksInSeparateRequests.setSelected(myRepository.getDownloadTasksInSeparateRequests());
   }
 

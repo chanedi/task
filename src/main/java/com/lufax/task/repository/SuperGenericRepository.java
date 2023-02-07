@@ -88,6 +88,8 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
             myPasswordTemplateVariable);
     @Attribute("id")
     private String id;
+    @Attribute("sharedInProjects")
+    private boolean mySharedInProjects;
     private String myLoginURL = "";
     private String myLoginWithTokenURL = "";
     private String myTasksListUrl = "";
@@ -135,6 +137,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     public SuperGenericRepository(final SuperGenericRepository other) {
         super(other);
         id = other.getId();
+        mySharedInProjects = other.isSharedInProjects();
         myLoginURL = other.getLoginUrl();
         myLoginWithTokenURL = other.getLoginWithTokenUrl();
         myLoginSuccessCookieName = other.getLoginSuccessCookieName();
@@ -168,6 +171,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         myLoginURL = "";
         myLoginWithTokenURL = "";
         myLoginSuccessCookieName = "";
+        mySharedInProjects = false;
         myUpdateConfig = new TaskUpdateConfig();
         myTasksListUrl = "";
         mySingleTaskUrl = "";
@@ -450,6 +454,14 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isSharedInProjects() {
+        return mySharedInProjects;
+    }
+
+    public void setSharedInProjects(boolean mySharedInProjects) {
+        this.mySharedInProjects = mySharedInProjects;
     }
 
     public void setLoginUrl(final String loginUrl) {
