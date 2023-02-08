@@ -43,7 +43,7 @@
                 <properties>
                   <horizontalAlignment value="4"/>
                   <labelFor value="4045e"/>
-                  <text resource-bundle="messages/TaskApiBundle" key="server.u.rl"/>
+                  <text value="Server &amp;Name:"/>
                 </properties>
               </component>
               <component id="4045e" class="javax.swing.JTextField" binding="myURLText">
