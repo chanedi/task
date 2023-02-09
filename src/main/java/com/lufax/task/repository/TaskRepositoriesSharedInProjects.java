@@ -41,24 +41,27 @@ public final class TaskRepositoriesSharedInProjects implements PersistentStateCo
     return ApplicationManager.getApplication().getService(TaskRepositoriesSharedInProjects.class);
   }
 
-  public void addRepository(TaskRepository repository) {
-    if (StringUtil.isEmptyOrSpaces(repository.getUrl())) {
-      return;
-    }
+  public void addOrRemoveRepository(TaskRepository repository) {
     if (!(repository instanceof SuperGenericRepository)) {
       return;
     }
-    if (!((SuperGenericRepository) repository).isSharedInProjects()) {
+    if (StringUtil.isEmptyOrSpaces(((SuperGenericRepository) repository).getId())) {
       return;
     }
     for (int i = 0; i < myRepositories.size(); i++) {
       if (!((SuperGenericRepository) repository).idEquals(myRepositories.get(i))) {
         continue;
       }
-      myRepositories.set(i, repository);
+      if (((SuperGenericRepository) repository).isSharedInProjects()) {
+        myRepositories.set(i, repository);
+      } else {
+        myRepositories.remove(i);
+      }
       return;
     }
-    myRepositories.add(repository);
+    if (((SuperGenericRepository) repository).isSharedInProjects()) {
+      myRepositories.add(repository);
+    }
   }
 
   @Override

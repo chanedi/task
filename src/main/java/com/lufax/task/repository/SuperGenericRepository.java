@@ -211,6 +211,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         if (!super.equals(o)) return false;
         SuperGenericRepository that = (SuperGenericRepository)o;
         if (!Objects.equals(getId(), that.getId())) return false;
+        if (!Objects.equals(isSharedInProjects(), that.isSharedInProjects())) return false;
         if (!Objects.equals(getLoginUrl(), that.getLoginUrl())) return false;
         if (!Objects.equals(getLoginWithTokenUrl(), that.getLoginWithTokenUrl())) return false;
         if (!Objects.equals(getTasksListUrl(), that.getTasksListUrl())) return false;
