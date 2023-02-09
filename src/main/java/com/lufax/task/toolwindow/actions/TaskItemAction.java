@@ -78,7 +78,7 @@ public abstract class TaskItemAction extends AnAction {
                 List<BranchInfo> branches = task.getBranches(false);
                 if (branches.size() > 0) {
                     BranchInfo branchInfo = branches.get(0);
-                    templateVariables.add(new TemplateVariable(BRANCH, branchInfo.name));
+                    templateVariables.add(new TemplateVariable(BRANCH, branchInfo.name.replace("origin/", "")));
 
                     DvcsTaskHandler dvcsTaskHandler = null;
                     VcsTaskHandler[] allHandlers = VcsTaskHandler.getAllHandlers(project);

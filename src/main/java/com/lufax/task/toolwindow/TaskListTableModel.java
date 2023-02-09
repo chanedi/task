@@ -1,5 +1,7 @@
 package com.lufax.task.toolwindow;
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskRepository;
@@ -105,10 +107,13 @@ public class TaskListTableModel extends ListTableModel<Task> {
         if (taskRepository == null) {
             setItems(new ArrayList<>());
         }
-        try {
-            setItems(Arrays.asList(taskRepository.getIssues("", 0, 10, false)));
-        } catch (Exception e) {
-            LOG.warn(e.getMessage(), e);
+        Application app = ApplicationManager.getApplication();
+        if (app == null || app.isUnitTestMode() || app.isHeadlessEnvironment() || !app.isReadAccessAllowed()) {
+            try {
+                setItems(Arrays.asList(taskRepository.getIssues("", 0, 10, false)));
+            } catch (Exception e) {
+                LOG.warn(e.getMessage(), e);
+            }
         }
     }
 }

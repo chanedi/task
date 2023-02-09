@@ -88,6 +88,8 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
             myPasswordTemplateVariable);
     @Attribute("id")
     private String id;
+    @Attribute("sharedInProjects")
+    private boolean mySharedInProjects;
     private String myLoginURL = "";
     private String myLoginWithTokenURL = "";
     private String myTasksListUrl = "";
@@ -135,6 +137,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
     public SuperGenericRepository(final SuperGenericRepository other) {
         super(other);
         id = other.getId();
+        mySharedInProjects = other.isSharedInProjects();
         myLoginURL = other.getLoginUrl();
         myLoginWithTokenURL = other.getLoginWithTokenUrl();
         myLoginSuccessCookieName = other.getLoginSuccessCookieName();
@@ -168,6 +171,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         myLoginURL = "";
         myLoginWithTokenURL = "";
         myLoginSuccessCookieName = "";
+        mySharedInProjects = false;
         myUpdateConfig = new TaskUpdateConfig();
         myTasksListUrl = "";
         mySingleTaskUrl = "";
@@ -207,6 +211,7 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         if (!super.equals(o)) return false;
         SuperGenericRepository that = (SuperGenericRepository)o;
         if (!Objects.equals(getId(), that.getId())) return false;
+        if (!Objects.equals(isSharedInProjects(), that.isSharedInProjects())) return false;
         if (!Objects.equals(getLoginUrl(), that.getLoginUrl())) return false;
         if (!Objects.equals(getLoginWithTokenUrl(), that.getLoginWithTokenUrl())) return false;
         if (!Objects.equals(getTasksListUrl(), that.getTasksListUrl())) return false;
@@ -338,7 +343,11 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
         }
         for (Cookie cookie : state.getCookies()) {
             if (cookie.getName().equals(getLoginSuccessCookieName())) {
-                return;
+                if (cookie.getExpiryDate().before(new Date())) {
+                    throw new NeedDynamicTokenException();
+                } else {
+                    return;
+                }
             }
         }
         throw new NeedDynamicTokenException();
@@ -446,6 +455,14 @@ public class SuperGenericRepository extends BaseRepositoryImpl {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isSharedInProjects() {
+        return mySharedInProjects;
+    }
+
+    public void setSharedInProjects(boolean mySharedInProjects) {
+        this.mySharedInProjects = mySharedInProjects;
     }
 
     public void setLoginUrl(final String loginUrl) {
