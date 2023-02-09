@@ -27,6 +27,7 @@
         <toolWindow id="Task" anchor="bottom" icon="TaskEnhanceIcons.ToolWindowTasks"
                     factoryClass="com.lufax.task.toolwindow.TaskToolWindowFactory"/>
         <projectService serviceImplementation="com.lufax.task.toolwindow.TaskUpdateConfigsState"/>
+        <applicationService serviceImplementation="com.lufax.task.repository.TaskRepositoriesSharedInProjects"/>
         <internalFileTemplate name="Release File"/>
         <tasks.commitPlaceholderProvider implementation="com.lufax.task.repository.SuperCommitPlaceholderProvider"/>
         <tasks.dialogPanelProvider implementation="com.lufax.task.toolwindow.actions.gotolocal.SuperTaskDialogPanelProvider"/>
@@ -45,4 +46,10 @@
             <action id="task.cancel" class="com.lufax.task.toolwindow.actions.TaskCancelAction" text="Cancel Task" icon="AllIcons.Actions.Cancel" />
         </group>
     </actions>
+
+    <applicationListeners>
+        <listener class="com.lufax.task.repository.LoadTaskRepositoriesSharedInProjectsListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </applicationListeners>
+
 </idea-plugin>

@@ -268,15 +268,17 @@ public class BaseRepositoryEditor<T extends BaseRepository> extends TaskReposito
     myRepository.setPassword(myPasswordText.getText());
     myRepository.storeCredentials();
     myRepository.setShared(myShareUrlCheckBox.isSelected());
-    if (myRepository instanceof SuperGenericRepository) {
-      ((SuperGenericRepository) myRepository).setSharedInProjects(myShareInProjectsCheckBox.isSelected());
-    }
     myRepository.setUseProxy(myUseProxy.isSelected());
     myRepository.setUseHttpAuthentication(myUseHttpAuthenticationCheckBox.isSelected());
     myRepository.setLoginAnonymously(myLoginAnonymouslyJBCheckBox.isSelected());
 
     myRepository.setShouldFormatCommitMessage(myAddCommitMessage.isSelected());
     myRepository.setCommitMessageFormat(myDocument.getText());
+
+    if (myRepository instanceof SuperGenericRepository) {
+      ((SuperGenericRepository) myRepository).setSharedInProjects(myShareInProjectsCheckBox.isSelected());
+      TaskRepositoriesSharedInProjects.getInstance().addRepository(myRepository);
+    }
   }
 
   @Override
