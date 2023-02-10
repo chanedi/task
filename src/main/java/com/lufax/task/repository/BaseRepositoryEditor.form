@@ -43,7 +43,7 @@
                 <properties>
                   <horizontalAlignment value="4"/>
                   <labelFor value="4045e"/>
-                  <text value="Server &amp;Name:"/>
+                  <text value="Server &amp;URL:"/>
                 </properties>
               </component>
               <component id="4045e" class="javax.swing.JTextField" binding="myURLText">
