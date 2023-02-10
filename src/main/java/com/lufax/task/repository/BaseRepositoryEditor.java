@@ -276,7 +276,7 @@ public class BaseRepositoryEditor<T extends BaseRepository> extends TaskReposito
 
     if (myRepository instanceof SuperGenericRepository) {
       ((SuperGenericRepository) myRepository).setSharedInProjects(myShareInProjectsCheckBox.isSelected());
-      TaskRepositoriesSharedInProjects.getInstance().addOrRemoveRepository(myRepository);
+      TaskRepositoriesSharedInProjects.getInstance().updateSharedRepository(myRepository);
     }
   }
 

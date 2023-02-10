@@ -6,7 +6,10 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.TaskRepository;
 import com.intellij.tasks.impl.TaskManagerImpl;
 import com.intellij.util.xmlb.XmlSerializer;
@@ -29,7 +32,7 @@ public final class TaskRepositoriesSharedInProjects implements PersistentStateCo
     return ServiceManager.getService(TaskRepositoriesSharedInProjects.class);
   }
 
-  public void addOrRemoveRepository(TaskRepository repository) {
+  public void updateSharedRepository(TaskRepository repository) {
     if (!(repository instanceof SuperGenericRepository)) {
       return;
     }
@@ -45,11 +48,43 @@ public final class TaskRepositoriesSharedInProjects implements PersistentStateCo
       } else {
         myRepositories.remove(i);
       }
+      refreshTaskRepositories();
       return;
     }
     if (((SuperGenericRepository) repository).isSharedInProjects()) {
       myRepositories.add(repository);
     }
+
+    refreshTaskRepositories();
+  }
+
+  private static void refreshTaskRepositories() {
+    for (Project openProject : ProjectManager.getInstance().getOpenProjects()) {
+      refreshTaskRepository(openProject);
+    }
+  }
+
+  public static void refreshTaskRepository(@NotNull Project project) {
+    TaskManagerImpl manager = (TaskManagerImpl) TaskManager.getManager(project);
+    @NotNull List<TaskRepository> repositories = new ArrayList<>();
+    for (TaskRepository repository : manager.getAllRepositories()) {
+      repositories.add(repository);
+    }
+    Map<String, TaskRepository> sharedRepositories = TaskRepositoriesSharedInProjects.getInstance().getRepositoryMap();
+    for (int i = 0; i < repositories.size(); i++) {
+      TaskRepository repository = repositories.get(i);
+      if (!(repository instanceof SuperGenericRepository)) {
+        continue;
+      }
+      TaskRepository sharedRepository = sharedRepositories.remove(((SuperGenericRepository) repository).getId());
+      if (sharedRepository != null) {
+        repositories.set(i, sharedRepository);
+      } else if (((SuperGenericRepository) repository).isSharedInProjects()) {
+        ((SuperGenericRepository) repository).setSharedInProjects(false);
+      }
+    }
+    repositories.addAll(sharedRepositories.values());
+    manager.setRepositories(repositories);
   }
 
   @Override
