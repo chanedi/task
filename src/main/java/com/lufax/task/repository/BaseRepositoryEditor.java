@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.CommitPlaceholderProvider;
-import com.intellij.tasks.TaskApiBundle;
 import com.intellij.tasks.config.TaskRepositoryEditor;
 import com.intellij.tasks.impl.BaseRepository;
 import com.intellij.ui.DocumentAdapter;
@@ -147,7 +146,7 @@ public class BaseRepositoryEditor<T extends BaseRepository> extends TaskReposito
         }
       }
     }
-    myComment.setText(TaskApiBundle.message("label.html.available.placeholders.html", comment));
+    myComment.setText("<html>Available placeholders: {0}</html>");
   }
 
 
