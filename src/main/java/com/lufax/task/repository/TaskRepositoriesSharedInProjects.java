@@ -2,15 +2,13 @@
 package com.lufax.task.repository;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.tasks.TaskRepository;
-import com.intellij.tasks.TaskRepositoryType;
 import com.intellij.tasks.impl.TaskManagerImpl;
-import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xmlb.XmlSerializer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -27,18 +25,8 @@ import java.util.Map;
 public final class TaskRepositoriesSharedInProjects implements PersistentStateComponent<Element>, Disposable {
   private final List<TaskRepository> myRepositories = new ArrayList<>();
 
-  public TaskRepositoriesSharedInProjects() {
-    // remove repositories pertaining to non-existent types
-    TaskRepositoryType.addEPListChangeListener(this, () -> {
-      List<Class<?>> possibleRepositoryClasses = TaskRepositoryType.getRepositoryClasses();
-      myRepositories.removeIf(repository -> {
-        return !ContainerUtil.exists(possibleRepositoryClasses, clazz -> clazz.isAssignableFrom(repository.getClass()));
-      });
-    });
-  }
-
   public static TaskRepositoriesSharedInProjects getInstance() {
-    return ApplicationManager.getApplication().getService(TaskRepositoriesSharedInProjects.class);
+    return ServiceManager.getService(TaskRepositoriesSharedInProjects.class);
   }
 
   public void addOrRemoveRepository(TaskRepository repository) {
