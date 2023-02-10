@@ -2,8 +2,8 @@
 package com.lufax.task.repository;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.util.text.StringUtil;
@@ -38,7 +38,7 @@ public final class TaskRepositoriesSharedInProjects implements PersistentStateCo
   }
 
   public static TaskRepositoriesSharedInProjects getInstance() {
-    return ApplicationManager.getApplication().getService(TaskRepositoriesSharedInProjects.class);
+    return ServiceManager.getService(TaskRepositoriesSharedInProjects.class);
   }
 
   public void addOrRemoveRepository(TaskRepository repository) {
