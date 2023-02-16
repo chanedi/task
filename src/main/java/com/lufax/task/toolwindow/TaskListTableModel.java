@@ -108,7 +108,7 @@ public class TaskListTableModel extends ListTableModel<Task> {
             setItems(new ArrayList<>());
         }
         Application app = ApplicationManager.getApplication();
-        if (app == null || app.isUnitTestMode() || app.isHeadlessEnvironment() || !app.isReadAccessAllowed()) {
+        if (!(app == null || app.isUnitTestMode() || app.isHeadlessEnvironment() || !app.isReadAccessAllowed())) {
             try {
                 setItems(Arrays.asList(taskRepository.getIssues("", 0, 10, false)));
             } catch (Exception e) {
