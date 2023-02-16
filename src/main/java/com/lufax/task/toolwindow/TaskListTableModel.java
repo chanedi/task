@@ -110,7 +110,7 @@ public class TaskListTableModel extends ListTableModel<Task> {
         Application app = ApplicationManager.getApplication();
         if (!(app == null || app.isUnitTestMode() || app.isHeadlessEnvironment() || !app.isReadAccessAllowed())) {
             try {
-                setItems(Arrays.asList(taskRepository.getIssues("", 0, 10, false)));
+                setItems(Arrays.asList(taskRepository.getIssues("", 0, 100, false)));
             } catch (Exception e) {
                 LOG.warn(e.getMessage(), e);
             }
