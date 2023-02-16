@@ -1,0 +1,100 @@
+<SuperGeneric url="http://123e11121212" id="c5ee213d-5ca8-4bf8-9372-b4b1cf896d93">
+    <option name="responseHandlers">
+        <XPathSuperResponseHandler>
+            <selectors>
+                <selector name="tasks" />
+                <selector name="id" />
+                <selector name="summary" />
+                <selector name="status" />
+                <selector name="releaseDate" />
+                <selector name="tag" />
+                <selector name="description" />
+                <selector name="updated" />
+                <selector name="created" />
+                <selector name="closed" />
+                <selector name="issueUrl" />
+                <selector name="customField1" />
+                <selector name="customField2" />
+                <selector name="customField3" />
+                <selector name="customField4" />
+                <selector name="customField5" />
+                <selector name="singleTask-id" />
+                <selector name="singleTask-summary" />
+                <selector name="singleTask-status" />
+                <selector name="singleTask-releaseDate" />
+                <selector name="singleTask-tag" />
+                <selector name="singleTask-description" />
+                <selector name="singleTask-updated" />
+                <selector name="singleTask-created" />
+                <selector name="singleTask-closed" />
+                <selector name="singleTask-issueUrl" />
+                <selector name="singleTask-customField1" />
+                <selector name="singleTask-customField2" />
+                <selector name="singleTask-customField3" />
+                <selector name="singleTask-customField4" />
+                <selector name="singleTask-customField5" />
+            </selectors>
+        </XPathSuperResponseHandler>
+        <JsonSuperResponseHandler>
+            <selectors>
+                <selector name="tasks" path="$.data" />
+                <selector name="id" path="id" />
+                <selector name="summary" />
+                <selector name="status" />
+                <selector name="releaseDate" />
+                <selector name="tag" />
+                <selector name="description" />
+                <selector name="updated" />
+                <selector name="created" />
+                <selector name="closed" />
+                <selector name="issueUrl" />
+                <selector name="customField1" />
+                <selector name="customField2" />
+                <selector name="customField3" />
+                <selector name="customField4" />
+                <selector name="customField5" />
+                <selector name="singleTask-id" />
+                <selector name="singleTask-summary" />
+                <selector name="singleTask-status" />
+                <selector name="singleTask-releaseDate" />
+                <selector name="singleTask-tag" />
+                <selector name="singleTask-description" />
+                <selector name="singleTask-updated" />
+                <selector name="singleTask-created" />
+                <selector name="singleTask-closed" />
+                <selector name="singleTask-issueUrl" />
+                <selector name="singleTask-customField1" />
+                <selector name="singleTask-customField2" />
+                <selector name="singleTask-customField3" />
+                <selector name="singleTask-customField4" />
+                <selector name="singleTask-customField5" />
+            </selectors>
+        </JsonSuperResponseHandler>
+        <RegExSuperResponseHandler />
+    </option>
+    <option name="updateConfig">
+        <TaskUpdateConfig>
+            <option name="cancelUrls">
+                <map>
+                    <entry key="default">
+                        <value>
+                            <ActionUrl />
+                        </value>
+                    </entry>
+                </map>
+            </option>
+            <option name="completeUrls">
+                <map>
+                    <entry key="default">
+                        <value>
+                            <ActionUrl />
+                        </value>
+                    </entry>
+                </map>
+            </option>
+            <option name="detailUrl" value="" />
+            <option name="name" value="3323" />
+        </TaskUpdateConfig>
+    </option>
+    <username>1</username>
+</SuperGeneric>

@@ -57,7 +57,8 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
             new WizardKanbanRepository(),
             new WizardWorkBenchRepository(),
             new IReleaseDevTaskRepository(),
-            new IReleaseStoryRepository()
+            new IReleaseStoryRepository(),
+            new IReleaseGeneralTaskRepository()
     );
   }
 
@@ -112,6 +113,12 @@ public class SuperGenericRepositoryType extends BaseRepositoryType<SuperGenericR
   public final class IReleaseDevTaskRepository extends SuperGenericSubtype {
     public IReleaseDevTaskRepository() {
       super("IReleaseDevTask", TaskEnhanceIcons.IRelease);
+    }
+  }
+
+  public final class IReleaseGeneralTaskRepository extends SuperGenericSubtype {
+    public IReleaseGeneralTaskRepository() {
+      super("IReleaseGeneralTask", TaskEnhanceIcons.IRelease);
     }
   }
 
