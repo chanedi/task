@@ -218,8 +218,10 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myLoginURLText.setEnabled(enabled);
     myLoginMethodTypeComboBox.setEnabled(enabled);
     myTestLoginButton.setEnabled(enabled);
-    myNeedDynamicTokenCheckBox.setSelected(false);
-    myLoginSuccessCookieNameText.setText("");
+    if (!enabled) {
+      myNeedDynamicTokenCheckBox.setSelected(false);
+      loginWithTokenEnablingChanged();
+    }
   }
 
   protected void loginWithTokenEnablingChanged() {
@@ -232,6 +234,9 @@ public class SuperGenericRepositoryEditor extends BaseRepositoryEditor<SuperGene
     myCookiePolicyLabel.setVisible(enabled);
     myCookiePolicyCombo.setVisible(enabled);
     myTestLoginWithTokenButton.setVisible(enabled);
+    if (!enabled) {
+      myLoginSuccessCookieNameText.setText("");
+    }
   }
 
   @Nullable
