@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.lufax"
-version = "1.4.1.2019.1"
+version = "1.4.2.2019.1"
 
 repositories {
     mavenCentral()
