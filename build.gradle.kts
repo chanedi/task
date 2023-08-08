@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.lufax"
-version = "1.4.1.2021.1"
+version = "1.4.2.2021.1"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ dependencies {
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    version.set("2021.1")
+    version.set("2023.2")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("com.intellij.tasks", "Git4Idea"))
@@ -31,7 +31,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("211")
-        untilBuild.set("223.*")
+        // untilBuild.set("223.*")
     }
 
     signPlugin {
