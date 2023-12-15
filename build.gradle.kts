@@ -18,7 +18,7 @@ dependencies {
 intellij {
 //    version.set("2021.1")
     version.set("2019.1")
-    type.set("IC", "PC") // Target IDE Platform
+    type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("com.intellij.tasks", "Git4Idea"))
 }
