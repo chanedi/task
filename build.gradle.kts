@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.lufax"
-version = "1.4.2.2021.1"
+version = "1.4.2.pc"
 
 repositories {
     mavenCentral()
@@ -17,7 +17,7 @@ dependencies {
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     version.set("2023.2")
-    type.set("IC") // Target IDE Platform
+    type.set("PC") // Target IDE Platform
 
     plugins.set(listOf("com.intellij.tasks", "Git4Idea"))
 }
